@@ -8,9 +8,14 @@ clock = pygame.time.Clock()
 FONT = pygame.font.SysFont("timesnewroman", 50)
 
 class Login:
+    BOTAO_WIDTH = 200
+    BOTAO_HEIGHT =  300
+
     def tela_inicio():
         bem_vindo = FONT.render("Bem-vindo ao CodeQuiz!", True, "white")
         win.blit(bem_vindo, (200, 100))
+
+
         cadastrar = FONT.render("Cadastrar", True, "white")
         win.blit(cadastrar, (500, 300))
         login = FONT.render("Login", True, "white")

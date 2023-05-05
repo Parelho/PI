@@ -134,6 +134,8 @@ textinput_usuario = pygame_textinput.TextInputVisualizer()
 textinput_senha = pygame_textinput.TextInputVisualizer()
 
 running = True
+jogador = Jogador()
+login = Login()
 
 while running:
     # Utilizado para ver os inputs do jogador
@@ -143,17 +145,17 @@ while running:
         if event.type == pygame.QUIT:
             running = False
     # Coloca o tema do fundo na tela atrás de todo o resto que for desenhado
-    win.fill(Jogador().tema)
+    win.fill(jogador.tema)
 
     # Login().inicio é utilizado para ver se o a tela de boas vindas deve ser mostrada ou não
-    if Login().inicio:
-        Login().tela_inicio()
+    if login.inicio:
+        login.tela_inicio()
     # Se login for True, será aberta a tela de login
-    elif Login().login:
-        Login().fazer_login()
+    elif login.login:
+        login.fazer_login()
     # Se login for False, será aberta a tela de cadastro
-    elif Login().login == False:
-        Login().fazer_cadastro()
+    elif login.login == False:
+        login.fazer_cadastro()
 
     # Da update nos métodos do pygame
     pygame.display.update()

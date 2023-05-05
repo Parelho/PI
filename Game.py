@@ -19,8 +19,9 @@ class Login:
         self.login = True
         self.cadastrar_rect = pygame.Rect(500, 300, 200, 50)
         self.login_rect = pygame.Rect(200, 300, 125, 50)
-        self.usuario_rect = pygame.Rect(100, 100, 100, 20)
-        self.senha_rect = pygame.Rect(100, 192, 100, 20)
+        self.usuario_rect = pygame.Rect(100, 100, 100, 30)
+        self.senha_rect = pygame.Rect(100, 192, 100, 30)
+        self.voltar_rect = pygame.Rect(400, 500, 100, 30)
         self.usuario_click = False
         self.senha_click = False
 
@@ -30,7 +31,13 @@ class Login:
         win.blit(usuario, (95, 92))
         senha = FONT_LOGIN.render("Senha: ", True, "white")
         win.blit(senha, (100, 192))
+        voltar = FONT_LOGIN.render("Voltar", True, "white")
+        win.blit(voltar,(400, 500))
         mpos = pygame.mouse.get_pos()
+
+        # Checa se o mouse está em cima do texto de voltar e se o jogador clicou com o botão esquerdo do mouse
+        if self.voltar_rect.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+            self.inicio = True
 
         # Checa se o mouse está em cima do texto de usuário e se o jogador clicou com o botão esquerdo do mouse
         if self.usuario_rect.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
@@ -67,7 +74,12 @@ class Login:
         win.blit(usuario, (95, 92))
         senha = FONT_LOGIN.render("Senha: ", True, "white")
         win.blit(senha, (100, 192))
+        voltar = FONT_LOGIN.render("Voltar", True, "white")
+        win.blit(voltar,(400, 500))
         mpos = pygame.mouse.get_pos()
+
+        if self.voltar_rect.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+            self.inicio = True
     
         if self.usuario_rect.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
             self.usuario_click = True

@@ -4,7 +4,7 @@ from mysql.connector import errorcode
 db = mysql.connector.connect(
     host = "localhost",
     user="root",
-    passwd="cockandballs",
+    passwd="senha mysql",
 )
 
 db_name = "pi"

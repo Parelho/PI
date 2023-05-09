@@ -53,4 +53,5 @@ data_salario = (1, 1500)
 cursor.execute(add_Pessoa, data_Pessoa)
 cursor.execute(add_Salario, data_salario)
 
+
 db.commit()

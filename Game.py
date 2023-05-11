@@ -261,6 +261,7 @@ class Login(Jogador):
 
         if self.voltar_rect.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
             self.inicio = True
+            self.cadastro = False
     
         if self.usuario_rect.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
             self.usuario_click = True

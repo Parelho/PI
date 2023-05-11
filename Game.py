@@ -134,7 +134,7 @@ class Login(Jogador):
         db = mysql.connector.connect(
             host = "localhost",
             user="root",
-            passwd="senha mysql",
+            passwd="senha mysql root",
         )
 
         db_name = "CodeQuiz"
@@ -211,6 +211,7 @@ class Login(Jogador):
         # Checa se o mouse está em cima do texto de voltar e se o jogador clicou com o botão esquerdo do mouse
         if self.voltar_rect.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
             self.inicio = True
+            self.login = False
 
         # Checa se o mouse está em cima do texto de usuário e se o jogador clicou com o botão esquerdo do mouse
         if self.usuario_rect.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
@@ -288,6 +289,8 @@ class Login(Jogador):
             self.cadastro_pronto = True
             self.usuario = textinput_usuario.value
             self.senha = textinput_senha.value
+            self.cadastro = False
+            self.inicio = True
 
     def tela_inicio(self):
         bem_vindo = FONT.render("Bem-vindo ao CodeQuiz!", True, "white")

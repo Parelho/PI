@@ -87,8 +87,12 @@ class Jogador:
 
 class SeletorDeNivel:
     def __init__(self):
+        self.voltar_rect = self.voltar_rect = pygame.Rect(400, 500, 100, 30)
+        self.voltar_ok = False
         self.lv1 = pygame.Rect(270, 70, 160, 160)
+        self.lv2 = pygame.Rect(470, 70, 160, 160)
         self.lv1_aberto = False
+        self.lv2_aberto = False
         self.lv_aberto = False
     
     def selecionar_nivel(self):
@@ -104,12 +108,27 @@ class SeletorDeNivel:
         if self.lv1.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
             self.lv_aberto = True
             self.lv1_aberto = True
+        elif self.lv2.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+            self.lv_aberto = True
+            self.lv2_aberto = True
+        
+        if self.lv_aberto == False:
+            self.lv1_aberto = False
+            self.lv2_aberto = False
+        
+    def voltar(self):
+            mpos = pygame.mouse.get_pos()
+            if self.lv_aberto:
+                voltar = FONT_LOGIN.render("Voltar", True, "white")
+                win.blit(voltar,(400, 500))
+                if self.voltar_rect.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    self.voltar_ok = True
 
 class Pergunta():
     def __init__(self):
-        pass
+        self.lv1_aberto = False
     
-    def nivel1(self):
+    def nivel(self):
         win.blit(FONT_LOGIN.render("Nivel 1", True, "white"), (400, 0))
 class Login(Jogador):
     # Método utilizado para permitir a sobrecarga de métodos no Python
@@ -134,7 +153,7 @@ class Login(Jogador):
         db = mysql.connector.connect(
             host = "localhost",
             user="root",
-            passwd="cockandballs",
+            passwd="goodpassword",
         )
 
         db_name = "CodeQuiz"
@@ -358,7 +377,11 @@ while running:
         elif jogador.loja_aberta:
             jogador.loja()
         elif nivel.lv_aberto:
-            pergunta.nivel1()
+            pergunta.nivel()
+            nivel.voltar()
+            if nivel.voltar_ok:
+                nivel.lv_aberto = False
+                nivel.voltar_ok = False
 
 
     # Da update nos métodos do pygame

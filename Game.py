@@ -3,6 +3,7 @@ import pygame_textinput
 import time
 import mysql.connector
 from mysql.connector import errorcode
+import os
 
 # Inicializa o pygame
 pygame.init()
@@ -13,9 +14,104 @@ clock = pygame.time.Clock()
 
 FONT = pygame.font.SysFont("timesnewroman", 50)
 FONT_LOGIN = pygame.font.SysFont("timesnewroman", 30)
+FONT_MOEDAS = pygame.font.SysFont("comicsans", 35)
+FONT_MASCOTE = pygame.font.SysFont("comicsans", 20)
+FONT_NIVEL = pygame.font.SysFont("arial", 100)
 
 # Classes
-class Login:
+class Jogador:
+    def __init__(self):
+        self.tema = "darkgreen"
+        self.tema_rect = pygame.Rect(450, 300, 100, 50)
+        self.engrenagem_rect = pygame.Rect(20, 500, 100, 100)
+        self.loja_rect = pygame.Rect(120, 500, 100, 100)
+        self.voltar_rect = pygame.Rect(400, 500, 100, 30)
+        self.moedas = 10
+        self.xp = 0
+        self.opcoes_aberto = False
+        self.loja_aberta = False
+
+    def menu_principal(self):
+        #Loja
+        loja = pygame.image.load(os.path.join("imgs", "Loja.png"))
+        win.blit(loja, (120, 500))
+        mpos = pygame.mouse.get_pos()
+
+        if self.loja_rect.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+            self.loja_aberta = True
+    
+        #Mostar xp e moedas
+        xp = FONT_MOEDAS.render("XP:" + str(self.xp), True, "white")
+        win.blit(xp, (750, 100))
+        moedas = FONT_MOEDAS.render("Moedas:" + str(self.moedas), True, "white")
+        win.blit(moedas, (700, 200))
+    
+        #Mascote
+        mascote = pygame.image.load(os.path.join("imgs", "Mascote.png"))
+        win.blit(mascote, (0, 50))
+
+        mensagem = FONT_MASCOTE.render("Bem-Vindo ao CodeQuiz!", True, "white")
+        win.blit(mensagem, (0, 0))
+
+        #Opcoes
+        engrenagem = pygame.image.load(os.path.join("imgs", "engrenagem.png"))
+        win.blit(engrenagem, (20, 500))
+
+        if self.engrenagem_rect.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+            self.opcoes_aberto = True
+
+    def opcoes(self):
+        mpos = pygame.mouse.get_pos()
+        if self.tema_rect.collidepoint(mpos):
+            if pygame.mouse.get_pressed()[0]:
+                self.tema = "purple"
+
+        pygame.draw.rect(win, self.tema, self.tema_rect)
+        win.fill(self.tema, self.tema_rect)
+
+        botao = FONT.render("Tema", True, "white")
+        win.blit(botao, (self.tema_rect.x, self.tema_rect.y))
+
+        voltar = FONT_LOGIN.render("Voltar", True, "white")
+        win.blit(voltar,(400, 500))
+        if self.voltar_rect.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+            self.opcoes_aberto = False
+    
+    def loja(self):
+        mpos = pygame.mouse.get_pos()
+
+        voltar = FONT_LOGIN.render("Voltar", True, "white")
+        win.blit(voltar,(400, 500))
+        if self.voltar_rect.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+            self.loja_aberta = False
+
+class SeletorDeNivel:
+    def __init__(self):
+        self.lv1 = pygame.Rect(270, 70, 160, 160)
+        self.lv1_aberto = False
+        self.lv_aberto = False
+    
+    def selecionar_nivel(self):
+        pygame.draw.rect(win, "grey",[250, 0, 10 ,600])
+        pygame.draw.rect(win, "grey",[650, 0, 10 ,600])
+        win.blit(FONT_LOGIN.render("Selecionar nivel", True, "white"), (350, 0))
+        pygame.draw.circle(win, "black",[350, 150], 80)
+        pygame.draw.circle(win, "black",[550, 150], 80)
+        win.blit(FONT_NIVEL.render("1", True, "white"), (325, 90))
+        win.blit(FONT_NIVEL.render("2", True, "white"), (525, 90))
+        mpos = pygame.mouse.get_pos()
+
+        if self.lv1.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+            self.lv_aberto = True
+            self.lv1_aberto = True
+
+class Pergunta():
+    def __init__(self):
+        pass
+    
+    def nivel1(self):
+        win.blit(FONT_LOGIN.render("Nivel 1", True, "white"), (400, 0))
+class Login(Jogador):
     # Método utilizado para permitir a sobrecarga de métodos no Python
     def __init__(self):
         self.inicio = True
@@ -34,7 +130,7 @@ class Login:
         self.senha = ""
         self.usuario = ""
     
-    def mysql(self):
+    def mysql(self, moedas, xp):
         db = mysql.connector.connect(
             host = "localhost",
             user="root",
@@ -62,7 +158,7 @@ class Login:
 
         TABLES = {}
 
-        TABLES['Usuario'] = ("CREATE TABLE Usuario(username varchar(50) unique, senha varchar(50));")
+        TABLES['Usuario'] = ("CREATE TABLE Usuario(username varchar(50) primary key, senha varchar(50), xp int, moedas int);")
         for table_name in TABLES:
             table_description = TABLES[table_name]
             try:
@@ -76,8 +172,8 @@ class Login:
             else:
                 print("OK")
         if self.cadastro_pronto == True:
-            add_usuario = "INSERT INTO Usuario VALUES(%s, %s);"
-            data_usuario = (self.usuario, self.senha)
+            add_usuario = "INSERT INTO Usuario VALUES(%s, %s, %s, %s);"
+            data_usuario = (self.usuario, self.senha, xp, moedas)
             cursor.execute(add_usuario, data_usuario)
             db.commit()
             self.usuario = ""
@@ -215,24 +311,6 @@ class Login:
                 self.login = True
                 self.inicio = False
 
-class Jogador:
-    def __init__(self):
-        self.tema = "purple"
-        self.tema_rect = pygame.Rect(450, 300, 100, 50)
-
-
-    def obter_tema(self):
-        mpos = pygame.mouse.get_pos()
-        if self.tema_rect.collidepoint(mpos):
-            if pygame.mouse.get_pressed()[0]:
-                self.tema = "green"
-
-        pygame.draw.rect(win, self.tema, self.tema_rect)
-        win.fill(self.tema, self.tema_rect)
-
-        botao = FONT.render("Tema", True, "white")
-        win.blit(botao, (self.tema_rect.x, self.tema_rect.y))
-
 # Utilizado para criar a string que será utilizada pelo pygame_textinput
 textinput_usuario = pygame_textinput.TextInputVisualizer()
 textinput_senha = pygame_textinput.TextInputVisualizer()
@@ -240,6 +318,8 @@ textinput_senha = pygame_textinput.TextInputVisualizer()
 running = True
 jogador = Jogador()
 login = Login()
+nivel = SeletorDeNivel()
+pergunta = Pergunta()
 
 while running:
     # Utilizado para ver os inputs do jogador
@@ -258,12 +338,24 @@ while running:
     elif login.login:
         login.fazer_login()
         if login.login_pronto:
-            login.mysql()
+            login.mysql(jogador.moedas, jogador.xp)
     # Se login for False, será aberta a tela de cadastro
     elif login.cadastro:
         login.fazer_cadastro()
         if login.cadastro_pronto:
-            login.mysql()
+            login.mysql(jogador.moedas, jogador.xp)
+    
+    if login.inicio == False and login.login == False and login.cadastro == False:
+        if jogador.opcoes_aberto == False and jogador.loja_aberta == False and nivel.lv_aberto == False:
+            jogador.menu_principal()
+            nivel.selecionar_nivel()
+        elif jogador.opcoes_aberto:
+            jogador.opcoes()
+        elif jogador.loja_aberta:
+            jogador.loja()
+        elif nivel.lv_aberto:
+            pergunta.nivel1()
+
 
     # Da update nos métodos do pygame
     pygame.display.update()

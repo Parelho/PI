@@ -50,7 +50,7 @@ class Jogador:
         mascote = pygame.image.load(os.path.join("imgs", "Mascote.png"))
         win.blit(mascote, (0, 50))
 
-        mensagem = FONT_MASCOTE.render("Bem-Vindo ao CodeQuiz!", True, "white")
+        mensagem = FONT_MASCOTE.render("Bem Vindo ao CodeQuiz!", True, "white")
         win.blit(mensagem, (0, 0))
 
         #Opcoes
@@ -134,7 +134,7 @@ class Login(Jogador):
         db = mysql.connector.connect(
             host = "localhost",
             user="root",
-            passwd="senha mysql root",
+            passwd="cockandballs",
         )
 
         db_name = "CodeQuiz"
@@ -293,8 +293,8 @@ class Login(Jogador):
             self.inicio = True
 
     def tela_inicio(self):
-        bem_vindo = FONT.render("Bem-vindo ao CodeQuiz!", True, "white")
-        win.blit(bem_vindo, (200, 100))
+        bem_vindo = FONT.render("CodeQuiz", True, "white")
+        win.blit(bem_vindo, (350, 100))
 
         cadastrar = FONT.render("Cadastrar", True, "white")
         win.blit(cadastrar, (500, 300))

@@ -1,8 +1,7 @@
 import pygame
 import pygame_textinput
 import time
-import mysql.connector
-from mysql.connector import errorcode
+import psycopg
 import os
 
 # Inicializa o pygame
@@ -149,71 +148,40 @@ class Login(Jogador):
         self.senha = ""
         self.usuario = ""
     
-    def mysql(self, moedas, xp):
-        db = mysql.connector.connect(
-            host = "localhost",
-            user="root",
-            passwd="goodpassword",
-        )
+    def banco_de_dados(self, moedas, xp):
+        with psycopg.connect(
+            dbname="neondb",
+            user="Parelho",
+            password="ns3Nolki1RzC",
+            host="ep-little-field-610508.us-east-2.aws.neon.tech",
+            port= '5432'
+            ) as db:
+            with db.cursor() as cursor:
 
-        db_name = "CodeQuiz"
-        cursor = db.cursor()
+                if self.cadastro_pronto == True:
+                    add_usuario = "INSERT INTO Usuario VALUES(%s, %s, %s, %s);"
+                    data_usuario = (self.usuario, self.senha, xp, moedas)
+                    cursor.execute(add_usuario, data_usuario)
+                    db.commit()
+                    self.usuario = ""
+                    self.senha = ""
+                    self.cadastro_pronto = False
+                
+                if self.login_pronto:
+                    query = "SELECT * FROM Usuario"
+                    cursor.execute(query)
 
-        def create_database(cursor):
-            try:
-                cursor.execute("CREATE DATABASE {};".format(db_name))
-            except mysql.connector.Error as err:
-                print("Failed creating database: {}".format(err))
-                exit(1)
-
-        try:
-            cursor.execute("USE {}".format(db_name))
-        except mysql.connector.Error as err:
-            print("Database {} does not exists.".format(db_name))
-            if err.errno == errorcode.ER_BAD_DB_ERROR:
-                create_database(cursor)
-                print("Database {} created successfully.".format(db_name))
-                db.database = db_name
-
-        TABLES = {}
-
-        TABLES['Usuario'] = ("CREATE TABLE Usuario(username varchar(50) primary key, senha varchar(50), xp int, moedas int);")
-        for table_name in TABLES:
-            table_description = TABLES[table_name]
-            try:
-                print("Creating table {}: ".format(table_name), end='')
-                cursor.execute(table_description)
-            except mysql.connector.Error as err:
-                if err.errno == errorcode.ER_TABLE_EXISTS_ERROR:
-                    print("already exists.")
-                else:
-                    print(err.msg)
-            else:
-                print("OK")
-        if self.cadastro_pronto == True:
-            add_usuario = "INSERT INTO Usuario VALUES(%s, %s, %s, %s);"
-            data_usuario = (self.usuario, self.senha, xp, moedas)
-            cursor.execute(add_usuario, data_usuario)
-            db.commit()
-            self.usuario = ""
-            self.senha = ""
-            self.cadastro_pronto = False
-        
-        if self.login_pronto:
-            query = "SELECT * FROM Usuario"
-            cursor.execute(query)
-
-            for row in cursor:
-                if self.usuario and self.senha in row:
-                    print("Usuario encontrado")
-                    break
-                else:
-                    print("Usuario nao encontrado")
-                    break
-            
-            self.login_pronto = False
-            self.inicio = False
-            self.login = False
+                    for row in cursor:
+                        if self.usuario and self.senha in row:
+                            print("Usuario encontrado")
+                            break
+                        else:
+                            print("Usuario nao encontrado")
+                            break
+                    
+                    self.login_pronto = False
+                    self.inicio = False
+                    self.login = False
 
     def fazer_login(self):
         # Mostrando os campos de usuário e senha para o jogador
@@ -361,12 +329,12 @@ while running:
     elif login.login:
         login.fazer_login()
         if login.login_pronto:
-            login.mysql(jogador.moedas, jogador.xp)
+            login.banco_de_dados(jogador.moedas, jogador.xp)
     # Se login for False, será aberta a tela de cadastro
     elif login.cadastro:
         login.fazer_cadastro()
         if login.cadastro_pronto:
-            login.mysql(jogador.moedas, jogador.xp)
+            login.banco_de_dados(jogador.moedas, jogador.xp)
     
     if login.inicio == False and login.login == False and login.cadastro == False:
         if jogador.opcoes_aberto == False and jogador.loja_aberta == False and nivel.lv_aberto == False:

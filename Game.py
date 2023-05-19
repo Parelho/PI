@@ -123,12 +123,15 @@ class SeletorDeNivel:
                 if self.voltar_rect.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
                     self.voltar_ok = True
 
-class Pergunta():
+class Pergunta(SeletorDeNivel):
     def __init__(self):
-        self.lv1_aberto = False
+        pass
     
-    def nivel(self):
-        win.blit(FONT_LOGIN.render("Nivel 1", True, "white"), (400, 0))
+    def nivel(self, lv1_aberto, lv2_aberto):
+        if lv1_aberto:
+            win.blit(FONT_LOGIN.render("Nivel 1", True, "white"), (400, 0))
+        elif lv2_aberto:
+            win.blit(FONT_LOGIN.render("Nivel 2", True, "white"), (400, 0))
 class Login(Jogador):
     # Método utilizado para permitir a sobrecarga de métodos no Python
     def __init__(self):
@@ -345,7 +348,7 @@ while running:
         elif jogador.loja_aberta:
             jogador.loja()
         elif nivel.lv_aberto:
-            pergunta.nivel()
+            pergunta.nivel(nivel.lv1_aberto, nivel.lv2_aberto)
             nivel.voltar()
             if nivel.voltar_ok:
                 nivel.lv_aberto = False

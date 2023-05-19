@@ -25,7 +25,7 @@ class Jogador:
         self.engrenagem_rect = pygame.Rect(20, 500, 100, 100)
         self.loja_rect = pygame.Rect(120, 500, 100, 100)
         self.voltar_rect = pygame.Rect(400, 500, 100, 30)
-        self.moedas = 10
+        self.moedas = 0
         self.xp = 0
         self.opcoes_aberto = False
         self.loja_aberta = False
@@ -84,7 +84,7 @@ class Jogador:
         if self.voltar_rect.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
             self.loja_aberta = False
 
-class SeletorDeNivel:
+class SeletorDeNivel(Jogador):
     def __init__(self):
         self.voltar_rect = self.voltar_rect = pygame.Rect(400, 500, 100, 30)
         self.voltar_ok = False
@@ -101,38 +101,69 @@ class SeletorDeNivel:
         self.lv5_aberto = False
         self.lv_endless_aberto = False
         self.lv_aberto = False
+        self.lv2_desbloqueado = False
+        self.lv3_desbloqueado = False
+        self.lv4_desbloqueado = False
+        self.lv5_desbloqueado = False
     
-    def selecionar_nivel(self):
-        pygame.draw.rect(win, "grey",[250, 0, 10 ,600])
-        pygame.draw.rect(win, "grey",[650, 0, 10 ,600])
+    def selecionar_nivel(self, xp):
+        if xp >= 4000:
+            self.lv5_desbloqueado = True
+        elif xp >= 3000:
+            self.lv4_desbloqueado = True
+        elif xp >= 2000:
+            self.lv3_desbloqueado = True
+        elif xp >= 1000:
+            self.lv2_desbloqueado = True
+    
+        cadeado = pygame.image.load(os.path.join("imgs", "Lock.png"))
+        pygame.draw.rect(win, "dimgrey",[250, 0, 5 ,600])
+        pygame.draw.rect(win, "dimgrey",[650, 0, 5 ,600])
         win.blit(FONT_LOGIN.render("Selecionar nivel", True, "white"), (350, 0))
         pygame.draw.circle(win, "black",[350, 150], 80)
-        pygame.draw.circle(win, "black",[550, 150], 80)
-        pygame.draw.circle(win, "black",[350, 325], 80)
-        pygame.draw.circle(win, "black",[550, 325], 80)
-        pygame.draw.circle(win, "black",[350, 500], 80)
-        pygame.draw.circle(win, "black",[550, 500], 80)
         win.blit(FONT_NIVEL.render("1", True, "white"), (325, 90))
-        win.blit(FONT_NIVEL.render("2", True, "white"), (525, 90))
-        win.blit(FONT_NIVEL.render("3", True, "white"), (325, 265))
-        win.blit(FONT_NIVEL.render("4", True, "white"), (525, 265))
-        win.blit(FONT_NIVEL.render("5", True, "white"), (325, 440))
+        pygame.draw.circle(win, "black",[550, 500], 80)
         win.blit(FONT_NIVEL.render("INF", True, "white"), (490, 440))
+        
+        if self.lv2_desbloqueado:
+            pygame.draw.circle(win, "black",[550, 150], 80)
+            win.blit(FONT_NIVEL.render("2", True, "white"), (525, 90))
+        else:
+            pygame.draw.circle(win, "azure4",[550, 150], 80)
+            win.blit(cadeado, (525, 125))
+        if self.lv3_desbloqueado:
+            pygame.draw.circle(win, "black",[350, 325], 80)
+            win.blit(FONT_NIVEL.render("3", True, "white"), (325, 265))
+        else:
+            pygame.draw.circle(win, "azure4",[350, 325], 80)
+            win.blit(cadeado, (325, 300))
+        if self.lv4_desbloqueado:
+            pygame.draw.circle(win, "black",[550, 325], 80)
+            win.blit(FONT_NIVEL.render("4", True, "white"), (525, 265))
+        else:
+            pygame.draw.circle(win, "azure4",[550, 325], 80)
+            win.blit(cadeado, (525, 300))
+        if self.lv5_desbloqueado:
+            pygame.draw.circle(win, "black",[350, 500], 80)
+            win.blit(FONT_NIVEL.render("5", True, "white"), (325, 440))
+        else:
+            pygame.draw.circle(win, "azure4",[350, 500], 80)
+            win.blit(cadeado, (325, 475))
         mpos = pygame.mouse.get_pos()
 
         if self.lv1.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
             self.lv_aberto = True
             self.lv1_aberto = True
-        elif self.lv2.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+        elif self.lv2.collidepoint(mpos) and pygame.mouse.get_pressed()[0] and xp >= 1000:
             self.lv_aberto = True
             self.lv2_aberto = True
-        elif self.lv3.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+        elif self.lv3.collidepoint(mpos) and pygame.mouse.get_pressed()[0] and xp >= 2000:
             self.lv_aberto = True
             self.lv3_aberto = True
-        elif self.lv4.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+        elif self.lv4.collidepoint(mpos) and pygame.mouse.get_pressed()[0] and xp >= 3000:
             self.lv_aberto = True
             self.lv4_aberto = True
-        elif self.lv5.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+        elif self.lv5.collidepoint(mpos) and pygame.mouse.get_pressed()[0] and xp >= 4000:
             self.lv_aberto = True
             self.lv5_aberto = True
         elif self.lv_endless.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
@@ -382,7 +413,7 @@ while running:
     if login.inicio == False and login.login == False and login.cadastro == False:
         if jogador.opcoes_aberto == False and jogador.loja_aberta == False and nivel.lv_aberto == False:
             jogador.menu_principal()
-            nivel.selecionar_nivel()
+            nivel.selecionar_nivel(jogador.xp)
         elif jogador.opcoes_aberto:
             jogador.opcoes()
         elif jogador.loja_aberta:

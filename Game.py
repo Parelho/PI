@@ -90,8 +90,16 @@ class SeletorDeNivel:
         self.voltar_ok = False
         self.lv1 = pygame.Rect(270, 70, 160, 160)
         self.lv2 = pygame.Rect(470, 70, 160, 160)
+        self.lv3 = pygame.Rect(270, 245, 160, 160)
+        self.lv4 = pygame.Rect(470, 245, 160, 160)
+        self.lv5 = pygame.Rect(270, 420, 160, 160)
+        self.lv_endless = pygame.Rect(470, 420, 160, 160)
         self.lv1_aberto = False
         self.lv2_aberto = False
+        self.lv3_aberto = False
+        self.lv4_aberto = False
+        self.lv5_aberto = False
+        self.lv_endless_aberto = False
         self.lv_aberto = False
     
     def selecionar_nivel(self):
@@ -100,8 +108,16 @@ class SeletorDeNivel:
         win.blit(FONT_LOGIN.render("Selecionar nivel", True, "white"), (350, 0))
         pygame.draw.circle(win, "black",[350, 150], 80)
         pygame.draw.circle(win, "black",[550, 150], 80)
+        pygame.draw.circle(win, "black",[350, 325], 80)
+        pygame.draw.circle(win, "black",[550, 325], 80)
+        pygame.draw.circle(win, "black",[350, 500], 80)
+        pygame.draw.circle(win, "black",[550, 500], 80)
         win.blit(FONT_NIVEL.render("1", True, "white"), (325, 90))
         win.blit(FONT_NIVEL.render("2", True, "white"), (525, 90))
+        win.blit(FONT_NIVEL.render("3", True, "white"), (325, 265))
+        win.blit(FONT_NIVEL.render("4", True, "white"), (525, 265))
+        win.blit(FONT_NIVEL.render("5", True, "white"), (325, 440))
+        win.blit(FONT_NIVEL.render("INF", True, "white"), (490, 440))
         mpos = pygame.mouse.get_pos()
 
         if self.lv1.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
@@ -110,10 +126,26 @@ class SeletorDeNivel:
         elif self.lv2.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
             self.lv_aberto = True
             self.lv2_aberto = True
+        elif self.lv3.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+            self.lv_aberto = True
+            self.lv3_aberto = True
+        elif self.lv4.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+            self.lv_aberto = True
+            self.lv4_aberto = True
+        elif self.lv5.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+            self.lv_aberto = True
+            self.lv5_aberto = True
+        elif self.lv_endless.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+            self.lv_aberto = True
+            self.lv_endless_aberto = True
         
         if self.lv_aberto == False:
             self.lv1_aberto = False
             self.lv2_aberto = False
+            self.lv3_aberto = False
+            self.lv4_aberto = False
+            self.lv5_aberto = False
+            self.lv_endless_aberto = False
         
     def voltar(self):
             mpos = pygame.mouse.get_pos()
@@ -127,11 +159,19 @@ class Pergunta(SeletorDeNivel):
     def __init__(self):
         pass
     
-    def nivel(self, lv1_aberto, lv2_aberto):
+    def nivel(self, lv1_aberto, lv2_aberto, lv3_aberto, lv4_aberto, lv5_aberto, lv_endless_aberto):
         if lv1_aberto:
             win.blit(FONT_LOGIN.render("Nivel 1", True, "white"), (400, 0))
         elif lv2_aberto:
             win.blit(FONT_LOGIN.render("Nivel 2", True, "white"), (400, 0))
+        elif lv3_aberto:
+            win.blit(FONT_LOGIN.render("Nivel 3", True, "white"), (400, 0))
+        elif lv4_aberto:
+            win.blit(FONT_LOGIN.render("Nivel 4", True, "white"), (400, 0))
+        elif lv5_aberto:
+            win.blit(FONT_LOGIN.render("Nivel 5", True, "white"), (400, 0))
+        elif lv_endless_aberto:
+            win.blit(FONT_LOGIN.render("Nivel INF", True, "white"), (400, 0))
 class Login(Jogador):
     # Método utilizado para permitir a sobrecarga de métodos no Python
     def __init__(self):
@@ -348,11 +388,12 @@ while running:
         elif jogador.loja_aberta:
             jogador.loja()
         elif nivel.lv_aberto:
-            pergunta.nivel(nivel.lv1_aberto, nivel.lv2_aberto)
+            pergunta.nivel(nivel.lv1_aberto, nivel.lv2_aberto, nivel.lv3_aberto, nivel.lv4_aberto, nivel.lv5_aberto, nivel.lv_endless_aberto)
             nivel.voltar()
             if nivel.voltar_ok:
                 nivel.lv_aberto = False
                 nivel.voltar_ok = False
+                time.sleep(0.5)
 
 
     # Da update nos métodos do pygame

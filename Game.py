@@ -3,9 +3,15 @@ import pygame_textinput
 import time
 import psycopg
 import os
+import random
 
 # Inicializa o pygame
 pygame.init()
+
+# Utilizados como workaround de um bug que estava impedindo a classe Login de pegar os valores atualizados de acertos, level e streak, se conseguir resolver o bug irei remover essa mostruosidade
+acertos = 0
+level = 0
+streak = 0
 
 # Constantes
 win = pygame.display.set_mode((900,600))
@@ -15,6 +21,7 @@ FONT = pygame.font.SysFont("timesnewroman", 50)
 FONT_LOGIN = pygame.font.SysFont("timesnewroman", 30)
 FONT_MOEDAS = pygame.font.SysFont("comicsans", 35)
 FONT_MASCOTE = pygame.font.SysFont("comicsans", 20)
+FONT_PERGUNTA = pygame.font.SysFont("arial", 20)
 FONT_NIVEL = pygame.font.SysFont("arial", 100)
 
 # Classes
@@ -25,8 +32,6 @@ class Jogador:
         self.engrenagem_rect = pygame.Rect(20, 500, 100, 100)
         self.loja_rect = pygame.Rect(120, 500, 100, 100)
         self.voltar_rect = pygame.Rect(400, 500, 100, 30)
-        self.moedas = 0
-        self.xp = 0
         self.opcoes_aberto = False
         self.loja_aberta = False
 
@@ -38,12 +43,6 @@ class Jogador:
 
         if self.loja_rect.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
             self.loja_aberta = True
-    
-        #Mostar xp e moedas
-        xp = FONT_MOEDAS.render("XP:" + str(self.xp), True, "white")
-        win.blit(xp, (750, 100))
-        moedas = FONT_MOEDAS.render("Moedas:" + str(self.moedas), True, "white")
-        win.blit(moedas, (700, 200))
     
         #Mascote
         mascote = pygame.image.load(os.path.join("imgs", "Mascote.png"))
@@ -84,10 +83,9 @@ class Jogador:
         if self.voltar_rect.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
             self.loja_aberta = False
 
-class SeletorDeNivel(Jogador):
+class SeletorDeNivel():
     def __init__(self):
-        self.voltar_rect = self.voltar_rect = pygame.Rect(400, 500, 100, 30)
-        self.voltar_ok = False
+        self.voltar_rect_pergunta = pygame.Rect(400, 500, 100, 30)
         self.lv1 = pygame.Rect(270, 70, 160, 160)
         self.lv2 = pygame.Rect(470, 70, 160, 160)
         self.lv3 = pygame.Rect(270, 245, 160, 160)
@@ -105,6 +103,7 @@ class SeletorDeNivel(Jogador):
         self.lv3_desbloqueado = False
         self.lv4_desbloqueado = False
         self.lv5_desbloqueado = False
+        self.login = Login()
     
     def selecionar_nivel(self, xp):
         if xp >= 4000:
@@ -177,33 +176,83 @@ class SeletorDeNivel(Jogador):
             self.lv4_aberto = False
             self.lv5_aberto = False
             self.lv_endless_aberto = False
-        
-    def voltar(self):
-            mpos = pygame.mouse.get_pos()
-            if self.lv_aberto:
-                voltar = FONT_LOGIN.render("Voltar", True, "white")
-                win.blit(voltar,(400, 500))
-                if self.voltar_rect.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
-                    self.voltar_ok = True
 
-class Pergunta(SeletorDeNivel):
+class Pergunta(SeletorDeNivel, Jogador):
     def __init__(self):
-        pass
+        self.voltar_ok = False
+        self.perguntas_lv1 = ["7 // 2 vale quanto?", "print 'Hello, ', 'world', tera qual resultado no console?'"]
+        self.lv1_index = random.randint(0, len(self.perguntas_lv1) - 1)
+        self.resp1 = pygame.Rect(10, 170, 200, 100)
+        self.resp2 = pygame.Rect(250, 170, 200, 100)
+        self.resp3 = pygame.Rect(10, 300, 200, 100)
+        self.resp4 = pygame.Rect(250, 300, 200, 100)
     
-    def nivel(self, lv1_aberto, lv2_aberto, lv3_aberto, lv4_aberto, lv5_aberto, lv_endless_aberto):
+    def nivel(self, lv1_aberto, lv2_aberto, lv3_aberto, lv4_aberto, lv5_aberto, lv_endless_aberto, voltar_rect_pergunta, lv_aberto):
+        troca_ok = False
+        global level
+        global acertos
+        global streak
+        mpos = pygame.mouse.get_pos()
         if lv1_aberto:
+            level = 1
+            pygame.draw.rect(win, "azure4",[10, 170, 200, 100])
+            pygame.draw.rect(win, "azure4",[250, 170, 200, 100])
+            pygame.draw.rect(win, "azure4",[10, 300, 200, 100])
+            pygame.draw.rect(win, "azure4",[250, 300, 200, 100])
             win.blit(FONT_LOGIN.render("Nivel 1", True, "white"), (400, 0))
+            win.blit(FONT_PERGUNTA.render(self.perguntas_lv1[self.lv1_index], True, "white"), (20, 40))
+            if self.perguntas_lv1[self.lv1_index] == "print 'Hello, ', 'world', tera qual resultado no console?'":
+                win.blit(FONT_PERGUNTA.render("Hello, world", True, "white"), (10, 170))
+                win.blit(FONT_PERGUNTA.render("Hello, ", True, "white"), (250, 170))
+                win.blit(FONT_PERGUNTA.render("Vai dar erro de compilação", True, "white"), (10, 300))
+                win.blit(FONT_PERGUNTA.render("world", True, "white"), (250, 300))
+                if self.resp1.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    streak = 1
+                elif self.resp2.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    streak = 1
+                elif self.resp3.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    while troca_ok == False:
+                        self.lv1_index = random.randint(0, len(self.perguntas_lv1) - 1)
+                        if self.lv1_index != 1:
+                            troca_ok = True
+                    acertos += 1
+                    streak += 1
+                elif self.resp4.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    streak = 1
         elif lv2_aberto:
+            level = 2
             win.blit(FONT_LOGIN.render("Nivel 2", True, "white"), (400, 0))
         elif lv3_aberto:
+            level = 3
             win.blit(FONT_LOGIN.render("Nivel 3", True, "white"), (400, 0))
         elif lv4_aberto:
+            level = 4
             win.blit(FONT_LOGIN.render("Nivel 4", True, "white"), (400, 0))
         elif lv5_aberto:
+            level = 5
             win.blit(FONT_LOGIN.render("Nivel 5", True, "white"), (400, 0))
         elif lv_endless_aberto:
             win.blit(FONT_LOGIN.render("Nivel INF", True, "white"), (400, 0))
-class Login(Jogador):
+        
+        if lv_aberto:
+                voltar = FONT_LOGIN.render("Voltar", True, "white")
+                win.blit(voltar,(400, 500))
+                if voltar_rect_pergunta.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    self.voltar_ok = True
+                    self.xp_novo = self.calcular_xp(acertos, streak, level)
+                    login.banco_de_dados(login.moedas, login.xp)
+                    acertos = 0
+                    streak = 0
+                    level = 0
+                    self.lv1_index = random.randint(0, len(self.perguntas_lv1) - 1)
+    
+    def calcular_xp(self, acertos, streak, level): 
+        xp_novo =  acertos * 10 * level * (1 + streak / 10)
+        return xp_novo
+    
+    def calcular_moedas(self):
+        return self.acertos * 25 * self.level * (self.streak / 10)
+class Login(Pergunta):
     # Método utilizado para permitir a sobrecarga de métodos no Python
     def __init__(self):
         self.inicio = True
@@ -221,7 +270,16 @@ class Login(Jogador):
         self.cadastro_pronto = False
         self.senha = ""
         self.usuario = ""
+        self.pergunta = Pergunta()
+        self.moedas = 0
+        self.xp = 0
     
+    def mostrar_xpmoedas(self):
+        xp = FONT_MOEDAS.render("XP:" + str(self.xp), True, "white")
+        win.blit(xp, (750, 100))
+        moedas = FONT_MOEDAS.render("Moedas:" + str(self.moedas), True, "white")
+        win.blit(moedas, (700, 200))
+
     def banco_de_dados(self, moedas, xp):
         with psycopg.connect(
             dbname="neondb",
@@ -237,25 +295,37 @@ class Login(Jogador):
                     data_usuario = (self.usuario, self.senha, xp, moedas)
                     cursor.execute(add_usuario, data_usuario)
                     db.commit()
-                    self.usuario = ""
-                    self.senha = ""
                     self.cadastro_pronto = False
                 
                 if self.login_pronto:
                     query = "SELECT * FROM Usuario"
                     cursor.execute(query)
+                    rows = cursor.fetchall()
+                    usuario_encontrado = False
 
-                    for row in cursor:
-                        if self.usuario and self.senha in row:
+                    for row in rows:
+                        if self.usuario == row[0] and self.senha == row[1]:
                             print("Usuario encontrado")
+                            self.xp = int(row[2])
+                            self.login_pronto = False
+                            self.inicio = False
+                            self.login = False
+                            usuario_encontrado = True
                             break
-                        else:
+                    else:
+                        if not usuario_encontrado:
                             print("Usuario nao encontrado")
-                            break
-                    
-                    self.login_pronto = False
-                    self.inicio = False
-                    self.login = False
+                            self.login_pronto = False
+
+                if pergunta.voltar_ok:
+                    global acertos
+                    global level
+                    global streak
+                    xp_nova = int(self.xp + self.calcular_xp(acertos, streak, level))
+                    query = f"UPDATE usuario SET xp = '{xp_nova}' WHERE username = '{self.usuario}';"
+                    cursor.execute(query)
+                    self.xp = xp_nova
+          
 
     def fazer_login(self):
         # Mostrando os campos de usuário e senha para o jogador
@@ -403,27 +473,27 @@ while running:
     elif login.login:
         login.fazer_login()
         if login.login_pronto:
-            login.banco_de_dados(jogador.moedas, jogador.xp)
+            login.banco_de_dados(login.moedas, login.xp)
     # Se login for False, será aberta a tela de cadastro
     elif login.cadastro:
         login.fazer_cadastro()
         if login.cadastro_pronto:
-            login.banco_de_dados(jogador.moedas, jogador.xp)
+            login.banco_de_dados(login.moedas, login.xp)
     
     if login.inicio == False and login.login == False and login.cadastro == False:
         if jogador.opcoes_aberto == False and jogador.loja_aberta == False and nivel.lv_aberto == False:
             jogador.menu_principal()
-            nivel.selecionar_nivel(jogador.xp)
+            login.mostrar_xpmoedas()
+            nivel.selecionar_nivel(login.xp)
         elif jogador.opcoes_aberto:
             jogador.opcoes()
         elif jogador.loja_aberta:
             jogador.loja()
         elif nivel.lv_aberto:
-            pergunta.nivel(nivel.lv1_aberto, nivel.lv2_aberto, nivel.lv3_aberto, nivel.lv4_aberto, nivel.lv5_aberto, nivel.lv_endless_aberto)
-            nivel.voltar()
-            if nivel.voltar_ok:
+            pergunta.nivel(nivel.lv1_aberto, nivel.lv2_aberto, nivel.lv3_aberto, nivel.lv4_aberto, nivel.lv5_aberto, nivel.lv_endless_aberto , nivel.voltar_rect_pergunta, nivel.lv_aberto)
+            if pergunta.voltar_ok:
                 nivel.lv_aberto = False
-                nivel.voltar_ok = False
+                pergunta.voltar_ok = False
                 time.sleep(0.5)
 
 

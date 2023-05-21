@@ -17,6 +17,7 @@ acertos = 0
 level = 0
 streak = 0
 coins = 0
+logoff = False
 boost = False
 
 def gerar_texto_chatgpt():
@@ -48,6 +49,7 @@ class Jogador:
         self.loja_rect = pygame.Rect(120, 500, 100, 100)
         self.voltar_rect = pygame.Rect(400, 500, 100, 30)
         self.boost_rect = pygame.Rect(20, 20, 80, 80)
+        self.logout_rect = pygame.Rect(20, 450, 128, 128)
         self.opcoes_aberto = False
         self.loja_aberta = False
         self.login = Login()
@@ -74,6 +76,7 @@ class Jogador:
 
         if self.engrenagem_rect.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
             self.opcoes_aberto = True
+            time.sleep(0.2)
 
     def opcoes(self):
         mpos = pygame.mouse.get_pos()
@@ -92,8 +95,14 @@ class Jogador:
         if self.voltar_rect.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
             self.opcoes_aberto = False
         
-
-    
+        logout = pygame.image.load(os.path.join("imgs", "Exit.png"))
+        win.blit(logout, (20, 450))
+        if self.logout_rect.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+            self.opcoes_aberto = False
+            global logoff
+            logoff = True
+            time.sleep(0.2)
+        
     def loja(self):
         mpos = pygame.mouse.get_pos()
 
@@ -581,6 +590,11 @@ class Login(Pergunta):
 
         # Checa se o mouse está em cima do botão de cadastro
         mpos = pygame.mouse.get_pos()
+        global logoff
+        if logoff:
+            self.inicio = True
+            logoff = False
+    
         if self.cadastrar_rect.collidepoint(mpos):
             # Checa se o jogador clicou com o botão esquerdo do mouse
             if pygame.mouse.get_pressed()[0]:
@@ -613,6 +627,8 @@ while running:
     # Coloca o tema do fundo na tela atrás de todo o resto que for desenhado
     win.fill(jogador.tema)
 
+    if logoff == True:
+        login.tela_inicio()
     # Login().inicio é utilizado para ver se o a tela de boas vindas deve ser mostrada ou não
     if login.inicio:
         login.tela_inicio()
@@ -627,7 +643,7 @@ while running:
         if login.cadastro_pronto:
             login.banco_de_dados(login.moedas, login.xp)
     
-    if login.inicio == False and login.login == False and login.cadastro == False:
+    elif login.inicio == False and login.login == False and login.cadastro == False:
         if jogador.opcoes_aberto == False and jogador.loja_aberta == False and nivel.lv_aberto == False:
             jogador.menu_principal()
             login.mostrar_xpmoedas()

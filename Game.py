@@ -12,6 +12,8 @@ pygame.init()
 acertos = 0
 level = 0
 streak = 0
+coins = 0
+boost = False
 
 # Constantes
 win = pygame.display.set_mode((900,600))
@@ -32,8 +34,10 @@ class Jogador:
         self.engrenagem_rect = pygame.Rect(20, 500, 100, 100)
         self.loja_rect = pygame.Rect(120, 500, 100, 100)
         self.voltar_rect = pygame.Rect(400, 500, 100, 30)
+        self.boost_rect = pygame.Rect(20, 20, 80, 80)
         self.opcoes_aberto = False
         self.loja_aberta = False
+        self.login = Login()
 
     def menu_principal(self):
         #Loja
@@ -82,6 +86,18 @@ class Jogador:
         win.blit(voltar,(400, 500))
         if self.voltar_rect.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
             self.loja_aberta = False
+        
+        bonus = pygame.image.load(os.path.join("imgs", "Boost.png"))
+        win.blit(bonus, (20, 20))
+        bonus_texto = FONT_LOGIN.render("Boost de Pontos", True, "black")
+        win.blit(bonus_texto,(100, 20))
+        global coins
+        global boost
+        if self.boost_rect.collidepoint(mpos) and pygame.mouse.get_pressed()[0] and coins >= 100 and boost == False:
+            boost = True
+            self.login.banco_de_dados(login.moedas, login.xp)
+            if boost:
+                print(coins)
 
 class SeletorDeNivel():
     def __init__(self):
@@ -103,7 +119,6 @@ class SeletorDeNivel():
         self.lv3_desbloqueado = False
         self.lv4_desbloqueado = False
         self.lv5_desbloqueado = False
-        self.login = Login()
     
     def selecionar_nivel(self, xp):
         if xp >= 4000:
@@ -246,13 +261,18 @@ class Pergunta(SeletorDeNivel, Jogador):
                     level = 0
                     self.lv1_index = random.randint(0, len(self.perguntas_lv1) - 1)
     
-
 class Resposta(Pergunta):
     def __init__(self):
         pass
 
     def calcular_pontos(self, acertos, streak, level):
-        pontos = acertos * 100 * level * (1 + streak / 10)
+        formula = acertos * 100 * level * (1 + streak / 10)
+        global boost
+        if boost and formula != 0:
+            pontos = formula * 1.25
+            boost = False
+        else:
+            pontos = formula
         return pontos
 
     def calcular_xp(self): 
@@ -323,6 +343,9 @@ class Login(Pergunta):
                         if self.usuario == row[0] and self.senha == row[1]:
                             print("Usuario encontrado")
                             self.xp = int(row[2])
+                            self.moedas = int(row[3])
+                            global coins
+                            coins = self.moedas
                             self.login_pronto = False
                             self.inicio = False
                             self.login = False
@@ -345,10 +368,16 @@ class Login(Pergunta):
                     query = f"UPDATE usuario SET moedas = '{moedas_nova}' WHERE username = '{self.usuario}';"
                     cursor.execute(query)
                     self.moedas = moedas_nova
+                    coins = self.moedas
                 
-                cursor.close()
-            db.close()
-          
+                global boost
+                if boost:
+                    coins_novo = coins - 100
+                    query = f"UPDATE usuario SET moedas = '{coins_novo}' WHERE username = '{self.usuario}';"
+                    cursor.execute(query)
+                    coins = coins_novo
+                    print(coins)
+                    self.moedas = coins
 
     def fazer_login(self):
         # Mostrando os campos de usuário e senha para o jogador

@@ -186,6 +186,7 @@ class Pergunta(SeletorDeNivel, Jogador):
         self.resp2 = pygame.Rect(250, 170, 200, 100)
         self.resp3 = pygame.Rect(10, 300, 200, 100)
         self.resp4 = pygame.Rect(250, 300, 200, 100)
+        self.resposta = Resposta()
     
     def nivel(self, lv1_aberto, lv2_aberto, lv3_aberto, lv4_aberto, lv5_aberto, lv_endless_aberto, voltar_rect_pergunta, lv_aberto):
         troca_ok = False
@@ -239,19 +240,29 @@ class Pergunta(SeletorDeNivel, Jogador):
                 win.blit(voltar,(400, 500))
                 if voltar_rect_pergunta.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
                     self.voltar_ok = True
-                    self.xp_novo = self.calcular_xp(acertos, streak, level)
                     login.banco_de_dados(login.moedas, login.xp)
                     acertos = 0
                     streak = 0
                     level = 0
                     self.lv1_index = random.randint(0, len(self.perguntas_lv1) - 1)
     
-    def calcular_xp(self, acertos, streak, level): 
-        xp_novo =  acertos * 10 * level * (1 + streak / 10)
+
+class Resposta(Pergunta):
+    def __init__(self):
+        pass
+
+    def calcular_pontos(self, acertos, streak, level):
+        pontos = acertos * 100 * level * (1 + streak / 10)
+        return pontos
+
+    def calcular_xp(self): 
+        xp_novo = self.calcular_pontos(acertos, streak, level) / 10
         return xp_novo
     
     def calcular_moedas(self):
-        return self.acertos * 25 * self.level * (self.streak / 10)
+        moedas_novo = self.calcular_pontos(acertos, streak, level) / 4
+        return moedas_novo
+
 class Login(Pergunta):
     # Método utilizado para permitir a sobrecarga de métodos no Python
     def __init__(self):
@@ -271,6 +282,7 @@ class Login(Pergunta):
         self.senha = ""
         self.usuario = ""
         self.pergunta = Pergunta()
+        self.resposta = Resposta()
         self.moedas = 0
         self.xp = 0
     
@@ -321,10 +333,17 @@ class Login(Pergunta):
                     global acertos
                     global level
                     global streak
-                    xp_nova = int(self.xp + self.calcular_xp(acertos, streak, level))
+                    xp_nova = int(self.xp + self.resposta.calcular_xp())
                     query = f"UPDATE usuario SET xp = '{xp_nova}' WHERE username = '{self.usuario}';"
                     cursor.execute(query)
                     self.xp = xp_nova
+                    moedas_nova = int(self.moedas + self.resposta.calcular_moedas())
+                    query = f"UPDATE usuario SET moedas = '{moedas_nova}' WHERE username = '{self.usuario}';"
+                    cursor.execute(query)
+                    self.moedas = moedas_nova
+                
+                cursor.close()
+            db.close()
           
 
     def fazer_login(self):

@@ -4,6 +4,10 @@ import time
 import psycopg
 import os
 import random
+import openai
+import re
+
+openai.api_key = "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"
 
 # Inicializa o pygame
 pygame.init()
@@ -14,6 +18,15 @@ level = 0
 streak = 0
 coins = 0
 boost = False
+
+def gerar_texto_chatgpt():
+    global completion
+    completion = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {"role": "user", "content": "Uma pergunta simples sobre programar em Python. de 4 alternativas, sendo apenas 1 correta informe a resposta correta colocando um * no final daquela alternativa"}
+                ]
+                )
 
 # Constantes
 win = pygame.display.set_mode((900,600))
@@ -201,7 +214,13 @@ class Pergunta(SeletorDeNivel, Jogador):
         self.resp2 = pygame.Rect(250, 170, 200, 100)
         self.resp3 = pygame.Rect(10, 300, 200, 100)
         self.resp4 = pygame.Rect(250, 300, 200, 100)
+        self.nova_pergunta = pygame.Rect(325, 425, 250, 30)
         self.resposta = Resposta()
+        self.respostas_ok = False
+        self.pergunta_ok = False
+        self.correta = 0
+        self.acerto = False
+        self.erro = False
     
     def nivel(self, lv1_aberto, lv2_aberto, lv3_aberto, lv4_aberto, lv5_aberto, lv_endless_aberto, voltar_rect_pergunta, lv_aberto):
         troca_ok = False
@@ -249,6 +268,76 @@ class Pergunta(SeletorDeNivel, Jogador):
             win.blit(FONT_LOGIN.render("Nivel 5", True, "black"), (400, 0))
         elif lv_endless_aberto:
             win.blit(FONT_LOGIN.render("Nivel INF", True, "black"), (400, 0))
+            win.blit(FONT_LOGIN.render("Gerar outra pergunta", True, "black"), (325, 425))
+            pygame.draw.rect(win, "azure4",[10, 170, 200, 100])
+            pygame.draw.rect(win, "azure4",[250, 170, 200, 100])
+            pygame.draw.rect(win, "azure4",[10, 300, 200, 100])
+            pygame.draw.rect(win, "azure4",[250, 300, 200, 100])
+            if self.nova_pergunta.collidepoint(mpos) and pygame.mouse.get_pressed()[0] or self.pergunta_ok == False:
+                self.pergunta_ok = True
+                gerar_texto_chatgpt()
+                time.sleep(1)
+
+            global completion
+            pattern = r"\n|\?|a\)|b\)|c\)|d\)"
+            string = completion.choices[0].message.content
+            elementos = re.split(pattern, string)
+            elementos = [element for element in elementos if element.strip()]
+
+            pergunta = elementos[0]
+            win.blit(FONT_PERGUNTA.render(pergunta, True, "black"), (0, 50))
+            win.blit(FONT_PERGUNTA.render(elementos[1], True, "black"), (10, 170))
+            win.blit(FONT_PERGUNTA.render(elementos[2], True, "black"), (250, 170))
+            win.blit(FONT_PERGUNTA.render(elementos[3], True, "black"), (10, 300))
+            win.blit(FONT_PERGUNTA.render(elementos[4], True, "black"), (250, 300))
+            
+            if "*" in elementos[1]:
+                elementos[1] = elementos[1].replace('*', '')
+                self.correta = 1
+            elif "*" in elementos[2]:
+                elementos[2] = elementos[2].replace('*', '')
+                self.correta = 2
+            elif "*" in elementos[3]:
+                elementos[3] = elementos[3].replace('*', '')
+                self.correta = 3
+            elif "*" in elementos[4]:
+                elementos[4] = elementos[4].replace('*', '')
+                self.correta = 4
+
+            
+            if self.resp1.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                if self.correta == 1:
+                    self.acerto = True
+                else:
+                    self.erro = True
+            elif self.resp2.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                if self.correta == 2:
+                    self.acerto = True
+                else:
+                    self.erro = True
+            elif self.resp3.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                if self.correta == 3:
+                    self.acerto = True
+                else:
+                    self.erro = True
+            elif self.resp4.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                if self.correta == 4:
+                    self.acerto = True
+                else:
+                    self.erro = True
+
+            if self.acerto and self.erro == False:
+                msg = FONT_MOEDAS.render("Acertou :)", True, "black")
+                win.blit(msg, (720, 110))
+                self.erro = False
+                
+            if self.erro and self.acerto == False:
+                msg = FONT_MOEDAS.render("Errou :(", True, "black")
+                win.blit(msg, (720, 110))
+            
+            if self.erro == True and self.acerto == True:
+                self.erro = False
+                self.acerto = False
         
         if lv_aberto:
                 voltar = FONT_LOGIN.render("Voltar", True, "black")
@@ -260,6 +349,7 @@ class Pergunta(SeletorDeNivel, Jogador):
                     streak = 0
                     level = 0
                     self.lv1_index = random.randint(0, len(self.perguntas_lv1) - 1)
+                    self.respostas_ok = False
     
 class Resposta(Pergunta):
     def __init__(self):
@@ -551,7 +641,7 @@ while running:
 
     # Da update nos métodos do pygame
     pygame.display.update()
-    # Taxa de FPS, atualmente está 60 FPS
-    clock.tick(60)
+    # Taxa de FPS, atualmente está 30 FPS
+    clock.tick(30)
 # Para as operações do pygame para garantir que o código vai terminar de ser executado
 pygame.quit()

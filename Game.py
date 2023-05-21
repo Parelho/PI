@@ -27,7 +27,7 @@ FONT_NIVEL = pygame.font.SysFont("arial", 100)
 # Classes
 class Jogador:
     def __init__(self):
-        self.tema = "darkgreen"
+        self.tema = "oldlace"
         self.tema_rect = pygame.Rect(450, 300, 100, 50)
         self.engrenagem_rect = pygame.Rect(20, 500, 100, 100)
         self.loja_rect = pygame.Rect(120, 500, 100, 100)
@@ -48,7 +48,7 @@ class Jogador:
         mascote = pygame.image.load(os.path.join("imgs", "Mascote.png"))
         win.blit(mascote, (0, 50))
 
-        mensagem = FONT_MASCOTE.render("Bem Vindo ao CodeQuiz!", True, "white")
+        mensagem = FONT_MASCOTE.render("Bem Vindo ao CodeQuiz!", True, "black")
         win.blit(mensagem, (0, 0))
 
         #Opcoes
@@ -62,15 +62,15 @@ class Jogador:
         mpos = pygame.mouse.get_pos()
         if self.tema_rect.collidepoint(mpos):
             if pygame.mouse.get_pressed()[0]:
-                self.tema = "purple"
+                self.tema = "mediumpurple4"
 
         pygame.draw.rect(win, self.tema, self.tema_rect)
         win.fill(self.tema, self.tema_rect)
 
-        botao = FONT.render("Tema", True, "white")
+        botao = FONT.render("Tema", True, "black")
         win.blit(botao, (self.tema_rect.x, self.tema_rect.y))
 
-        voltar = FONT_LOGIN.render("Voltar", True, "white")
+        voltar = FONT_LOGIN.render("Voltar", True, "black")
         win.blit(voltar,(400, 500))
         if self.voltar_rect.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
             self.opcoes_aberto = False
@@ -78,7 +78,7 @@ class Jogador:
     def loja(self):
         mpos = pygame.mouse.get_pos()
 
-        voltar = FONT_LOGIN.render("Voltar", True, "white")
+        voltar = FONT_LOGIN.render("Voltar", True, "black")
         win.blit(voltar,(400, 500))
         if self.voltar_rect.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
             self.loja_aberta = False
@@ -118,7 +118,7 @@ class SeletorDeNivel():
         cadeado = pygame.image.load(os.path.join("imgs", "Lock.png"))
         pygame.draw.rect(win, "dimgrey",[250, 0, 5 ,600])
         pygame.draw.rect(win, "dimgrey",[650, 0, 5 ,600])
-        win.blit(FONT_LOGIN.render("Selecionar nivel", True, "white"), (350, 0))
+        win.blit(FONT_LOGIN.render("Selecionar nivel", True, "black"), (350, 0))
         pygame.draw.circle(win, "black",[350, 150], 80)
         win.blit(FONT_NIVEL.render("1", True, "white"), (325, 90))
         pygame.draw.circle(win, "black",[550, 500], 80)
@@ -200,13 +200,13 @@ class Pergunta(SeletorDeNivel, Jogador):
             pygame.draw.rect(win, "azure4",[250, 170, 200, 100])
             pygame.draw.rect(win, "azure4",[10, 300, 200, 100])
             pygame.draw.rect(win, "azure4",[250, 300, 200, 100])
-            win.blit(FONT_LOGIN.render("Nivel 1", True, "white"), (400, 0))
-            win.blit(FONT_PERGUNTA.render(self.perguntas_lv1[self.lv1_index], True, "white"), (20, 40))
+            win.blit(FONT_LOGIN.render("Nivel 1", True, "black"), (400, 0))
+            win.blit(FONT_PERGUNTA.render(self.perguntas_lv1[self.lv1_index], True, "black"), (20, 40))
             if self.perguntas_lv1[self.lv1_index] == "print 'Hello, ', 'world', tera qual resultado no console?'":
-                win.blit(FONT_PERGUNTA.render("Hello, world", True, "white"), (10, 170))
-                win.blit(FONT_PERGUNTA.render("Hello, ", True, "white"), (250, 170))
-                win.blit(FONT_PERGUNTA.render("Vai dar erro de compilação", True, "white"), (10, 300))
-                win.blit(FONT_PERGUNTA.render("world", True, "white"), (250, 300))
+                win.blit(FONT_PERGUNTA.render("Hello, world", True, "black"), (10, 170))
+                win.blit(FONT_PERGUNTA.render("Hello, ", True, "black"), (250, 170))
+                win.blit(FONT_PERGUNTA.render("Vai dar erro de compilação", True, "black"), (10, 300))
+                win.blit(FONT_PERGUNTA.render("world", True, "black"), (250, 300))
                 if self.resp1.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
                     streak = 1
                 elif self.resp2.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
@@ -222,21 +222,21 @@ class Pergunta(SeletorDeNivel, Jogador):
                     streak = 1
         elif lv2_aberto:
             level = 2
-            win.blit(FONT_LOGIN.render("Nivel 2", True, "white"), (400, 0))
+            win.blit(FONT_LOGIN.render("Nivel 2", True, "black"), (400, 0))
         elif lv3_aberto:
             level = 3
-            win.blit(FONT_LOGIN.render("Nivel 3", True, "white"), (400, 0))
+            win.blit(FONT_LOGIN.render("Nivel 3", True, "black"), (400, 0))
         elif lv4_aberto:
             level = 4
-            win.blit(FONT_LOGIN.render("Nivel 4", True, "white"), (400, 0))
+            win.blit(FONT_LOGIN.render("Nivel 4", True, "black"), (400, 0))
         elif lv5_aberto:
             level = 5
-            win.blit(FONT_LOGIN.render("Nivel 5", True, "white"), (400, 0))
+            win.blit(FONT_LOGIN.render("Nivel 5", True, "black"), (400, 0))
         elif lv_endless_aberto:
-            win.blit(FONT_LOGIN.render("Nivel INF", True, "white"), (400, 0))
+            win.blit(FONT_LOGIN.render("Nivel INF", True, "black"), (400, 0))
         
         if lv_aberto:
-                voltar = FONT_LOGIN.render("Voltar", True, "white")
+                voltar = FONT_LOGIN.render("Voltar", True, "black")
                 win.blit(voltar,(400, 500))
                 if voltar_rect_pergunta.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
                     self.voltar_ok = True
@@ -287,10 +287,14 @@ class Login(Pergunta):
         self.xp = 0
     
     def mostrar_xpmoedas(self):
-        xp = FONT_MOEDAS.render("XP:" + str(self.xp), True, "white")
-        win.blit(xp, (750, 100))
-        moedas = FONT_MOEDAS.render("Moedas:" + str(self.moedas), True, "white")
-        win.blit(moedas, (700, 200))
+        xp = FONT_MOEDAS.render(str(self.xp), True, "black")
+        win.blit(xp, (765, 110))
+        moedas = FONT_MOEDAS.render(str(self.moedas), True, "black")
+        win.blit(moedas, (765, 210))
+        xp_img = pygame.image.load(os.path.join("imgs", "Xp.png"))
+        win.blit(xp_img, (700, 100))
+        moedas_img = pygame.image.load(os.path.join("imgs", "Coin.png"))
+        win.blit(moedas_img, (700, 200))
 
     def banco_de_dados(self, moedas, xp):
         with psycopg.connect(
@@ -348,13 +352,13 @@ class Login(Pergunta):
 
     def fazer_login(self):
         # Mostrando os campos de usuário e senha para o jogador
-        usuario = FONT_LOGIN.render("Usuario: ", True, "white")
+        usuario = FONT_LOGIN.render("Usuario: ", True, "black")
         win.blit(usuario, (95, 92))
-        senha = FONT_LOGIN.render("Senha: ", True, "white")
+        senha = FONT_LOGIN.render("Senha: ", True, "black")
         win.blit(senha, (100, 192))
-        voltar = FONT_LOGIN.render("Voltar", True, "white")
+        voltar = FONT_LOGIN.render("Voltar", True, "black")
         win.blit(voltar,(400, 500))
-        enviar = FONT_LOGIN.render("Enviar", True, "white")
+        enviar = FONT_LOGIN.render("Enviar", True, "black")
         win.blit(enviar, (400, 400))
         mpos = pygame.mouse.get_pos()
 
@@ -400,13 +404,13 @@ class Login(Pergunta):
 
        # Similar ao método de login, fora a parte que está comentada
     def fazer_cadastro(self):
-        usuario = FONT_LOGIN.render("Usuario: ", True, "white")
+        usuario = FONT_LOGIN.render("Usuario: ", True, "black")
         win.blit(usuario, (95, 92))
-        senha = FONT_LOGIN.render("Senha: ", True, "white")
+        senha = FONT_LOGIN.render("Senha: ", True, "black")
         win.blit(senha, (100, 192))
-        voltar = FONT_LOGIN.render("Voltar", True, "white")
+        voltar = FONT_LOGIN.render("Voltar", True, "black")
         win.blit(voltar,(400, 500))
-        enviar = FONT_LOGIN.render("Enviar", True, "white")
+        enviar = FONT_LOGIN.render("Enviar", True, "black")
         win.blit(enviar, (400, 400))
         mpos = pygame.mouse.get_pos()
 
@@ -443,12 +447,12 @@ class Login(Pergunta):
             self.inicio = True
 
     def tela_inicio(self):
-        bem_vindo = FONT.render("CodeQuiz", True, "white")
+        bem_vindo = FONT.render("CodeQuiz", True, "black")
         win.blit(bem_vindo, (350, 100))
 
-        cadastrar = FONT.render("Cadastrar", True, "white")
+        cadastrar = FONT.render("Cadastrar", True, "black")
         win.blit(cadastrar, (500, 300))
-        login = FONT.render("Login", True, "white")
+        login = FONT.render("Login", True, "black")
         win.blit(login, (200, 300))
 
         # Checa se o mouse está em cima do botão de cadastro

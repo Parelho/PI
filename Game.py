@@ -219,7 +219,7 @@ class SeletorDeNivel():
 class Pergunta(SeletorDeNivel, Jogador):
     def __init__(self):
         self.voltar_ok = False
-        self.perguntas_lv1 = ["7 // 2 vale quanto?", "print 'Hello, ', 'world', tera qual resultado no console?'"]
+        self.perguntas_lv1 = ["7 // 2 vale quanto?", "print 'Hello, ', 'world', tera qual resultado no console?'", "10 % 2 vale quanto?", "Qual o simbolo utilizado para adicionar comentarios?", "100 / 0 vale quanto?"]
         self.lv1_index = random.randint(0, len(self.perguntas_lv1) - 1)
         self.resp1 = pygame.Rect(10, 170, 200, 100)
         self.resp2 = pygame.Rect(250, 170, 200, 100)
@@ -238,6 +238,7 @@ class Pergunta(SeletorDeNivel, Jogador):
         global level
         global acertos
         global streak
+        win.blit(FONT_LOGIN.render("Streak: " + str(streak), True, "black"), (600, 0))
         mpos = pygame.mouse.get_pos()
         if lv1_aberto:
             level = 1
@@ -247,24 +248,101 @@ class Pergunta(SeletorDeNivel, Jogador):
             pygame.draw.rect(win, "azure4",[250, 300, 200, 100])
             win.blit(FONT_LOGIN.render("Nivel 1", True, "black"), (400, 0))
             win.blit(FONT_PERGUNTA.render(self.perguntas_lv1[self.lv1_index], True, "black"), (20, 40))
-            if self.perguntas_lv1[self.lv1_index] == "print 'Hello, ', 'world', tera qual resultado no console?'":
+            if self.perguntas_lv1[self.lv1_index] == "7 // 2 vale quanto?":
+                win.blit(FONT_PERGUNTA.render("3.5", True, "black"), (10, 170))
+                win.blit(FONT_PERGUNTA.render("3", True, "black"), (250, 170))
+                win.blit(FONT_PERGUNTA.render("Vai dar erro de compilação", True, "black"), (10, 300))
+                win.blit(FONT_PERGUNTA.render("4", True, "black"), (250, 300))
+                if self.resp1.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    streak = 0
+                elif self.resp2.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    acertos += 1
+                    streak += 1
+                    while troca_ok == False:
+                        self.lv1_index = random.randint(0, len(self.perguntas_lv1) - 1)
+                        if self.lv1_index != 0:
+                            troca_ok = True
+                            time.sleep(0.5)
+                elif self.resp3.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    streak = 0
+                elif self.resp4.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    streak = 0
+            elif self.perguntas_lv1[self.lv1_index] == "print 'Hello, ', 'world', tera qual resultado no console?'":
                 win.blit(FONT_PERGUNTA.render("Hello, world", True, "black"), (10, 170))
                 win.blit(FONT_PERGUNTA.render("Hello, ", True, "black"), (250, 170))
                 win.blit(FONT_PERGUNTA.render("Vai dar erro de compilação", True, "black"), (10, 300))
                 win.blit(FONT_PERGUNTA.render("world", True, "black"), (250, 300))
                 if self.resp1.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
-                    streak = 1
+                    streak = 0
                 elif self.resp2.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
-                    streak = 1
+                    streak = 0
                 elif self.resp3.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
                     while troca_ok == False:
                         self.lv1_index = random.randint(0, len(self.perguntas_lv1) - 1)
                         if self.lv1_index != 1:
                             troca_ok = True
+                            time.sleep(0.5)
                     acertos += 1
                     streak += 1
                 elif self.resp4.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
-                    streak = 1
+                    streak = 0
+            elif self.perguntas_lv1[self.lv1_index] == "10 % 2 vale quanto?":
+                win.blit(FONT_PERGUNTA.render("0", True, "black"), (10, 170))
+                win.blit(FONT_PERGUNTA.render("5, ", True, "black"), (250, 170))
+                win.blit(FONT_PERGUNTA.render("0.2", True, "black"), (10, 300))
+                win.blit(FONT_PERGUNTA.render("Vai dar erro de compilação", True, "black"), (250, 300))
+                if self.resp1.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    acertos += 1
+                    streak += 1
+                    while troca_ok == False:
+                        self.lv1_index = random.randint(0, len(self.perguntas_lv1) - 1)
+                        if self.lv1_index != 2:
+                            troca_ok = True
+                            time.sleep(0.5)
+                elif self.resp2.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    streak = 0
+                elif self.resp3.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    streak = 0
+                elif self.resp4.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    streak = 0
+            elif self.perguntas_lv1[self.lv1_index] == "Qual o simbolo utilizado para adicionar comentarios?":
+                win.blit(FONT_PERGUNTA.render("#", True, "black"), (10, 170))
+                win.blit(FONT_PERGUNTA.render("//", True, "black"), (250, 170))
+                win.blit(FONT_PERGUNTA.render("/*   */", True, "black"), (10, 300))
+                win.blit(FONT_PERGUNTA.render("<!--   -->", True, "black"), (250, 300))
+                if self.resp1.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    acertos += 1
+                    streak += 1
+                    while troca_ok == False:
+                        self.lv1_index = random.randint(0, len(self.perguntas_lv1) - 1)
+                        if self.lv1_index != 3:
+                            troca_ok = True
+                            time.sleep(0.5)
+                elif self.resp2.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    streak = 0
+                elif self.resp3.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    streak = 0
+                elif self.resp4.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    streak = 0
+            elif self.perguntas_lv1[self.lv1_index] == "100 / 0 vale quanto?":
+                win.blit(FONT_PERGUNTA.render("0", True, "black"), (10, 170))
+                win.blit(FONT_PERGUNTA.render("100", True, "black"), (250, 170))
+                win.blit(FONT_PERGUNTA.render("Vai dar erro de compilação", True, "black"), (10, 300))
+                win.blit(FONT_PERGUNTA.render("False", True, "black"), (250, 300))
+                if self.resp1.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    streak = 0
+                elif self.resp2.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    streak = 0
+                elif self.resp3.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    while troca_ok == False:
+                        self.lv1_index = random.randint(0, len(self.perguntas_lv1) - 1)
+                        if self.lv1_index != 4:
+                            troca_ok = True
+                            time.sleep(0.5)
+                    acertos += 1
+                    streak += 1
+                elif self.resp4.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    streak = 0
         elif lv2_aberto:
             level = 2
             win.blit(FONT_LOGIN.render("Nivel 2", True, "black"), (400, 0))

@@ -91,6 +91,8 @@ class Jogador:
         win.blit(voltar,(400, 500))
         if self.voltar_rect.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
             self.opcoes_aberto = False
+        
+
     
     def loja(self):
         mpos = pygame.mouse.get_pos()
@@ -520,6 +522,8 @@ class Login(Pergunta):
             self.login_pronto = True
             self.usuario = textinput_usuario.value
             self.senha = textinput_senha.value
+            textinput_usuario.value = ""
+            textinput_senha.value = ""
 
        # Similar ao método de login, fora a parte que está comentada
     def fazer_cadastro(self):
@@ -564,7 +568,8 @@ class Login(Pergunta):
             self.senha = textinput_senha.value
             self.cadastro = False
             self.inicio = True
-
+            textinput_usuario.value = ""
+            textinput_senha.value = ""
     def tela_inicio(self):
         bem_vindo = FONT.render("CodeQuiz", True, "black")
         win.blit(bem_vindo, (350, 100))

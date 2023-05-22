@@ -9,7 +9,7 @@ import re
 from dotenv import load_dotenv
 
 load_dotenv()
-print(os.getenv("api_key"))
+openai.api_key = os.getenv("api_key")
 
 
 # Inicializa o pygame
@@ -23,16 +23,21 @@ coins = 0
 logoff = False
 boost = False
 boost_ok = False
+mensagem_on = False
 
 def gerar_texto_chatgpt():
-    global completion
-    completion = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",
-                messages=[
-                    {"role": "user", "content": "Uma pergunta simples sobre programar em Python. de 4 alternativas, sendo apenas 1 correta informe a resposta correta na primeira alternativa"}
-                ]
-                )
-    print(completion.choices[0].message.content)
+    global mensagem_on
+    try:
+        global completion
+        completion = openai.ChatCompletion.create(
+                    model="gpt-3.5-turbo",
+                    messages=[
+                        {"role": "user", "content": "Uma pergunta simples sobre programar em Python. de 4 alternativas, sendo apenas 1 correta informe a resposta correta na primeira alternativa"}
+                    ]
+                    )
+        mensagem_on = False
+    except:
+        mensagem_on = True
 
 # Constantes
 win = pygame.display.set_mode((900,600))
@@ -233,7 +238,6 @@ class Pergunta(SeletorDeNivel, Jogador):
         self.correta = 0
         self.acerto = False
         self.erro = False
-        self.tratamento_ok = False
     
     def nivel(self, lv1_aberto, lv2_aberto, lv3_aberto, lv4_aberto, lv5_aberto, lv_endless_aberto, voltar_rect_pergunta, lv_aberto):
         troca_ok = False
@@ -364,14 +368,12 @@ class Pergunta(SeletorDeNivel, Jogador):
             pygame.draw.rect(win, "azure4",[250, 170, 200, 100])
             pygame.draw.rect(win, "azure4",[10, 300, 200, 100])
             pygame.draw.rect(win, "azure4",[250, 300, 200, 100])
+            global mensagem_on
+            if mensagem_on:
+                win.blit(FONT_LOGIN.render(f"Aguarde 20 segundos para gerar outra pergunta", True, "black"), (0, 100))
             if self.nova_pergunta.collidepoint(mpos) and pygame.mouse.get_pressed()[0] or self.pergunta_ok == False:
                 self.pergunta_ok = True
-                try:
-                    gerar_texto_chatgpt()
-                except:
-                    win.blit(FONT_LOGIN.render("Erro", True, "black"), (500, 200))
-                    #deixar na tela ate dar tempo de pedir uma pergunta nova
-                time.sleep(1)
+                gerar_texto_chatgpt()
 
             global completion
             pattern = r"\n|\?|a\)|b\)|c\)|d\)"

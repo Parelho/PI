@@ -7,7 +7,7 @@ import random
 import openai
 import re
 
-openai.api_key = "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"
+openai.api_key = "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"
 
 # Inicializa o pygame
 pygame.init()
@@ -423,6 +423,7 @@ class Pergunta(SeletorDeNivel, Jogador):
             if self.erro and self.acerto == False:
                 msg = FONT_MOEDAS.render("Errou :(", True, "black")
                 win.blit(msg, (720, 110))
+                self.acerto = False
             
             if self.erro == True and self.acerto == True:
                 self.erro = False

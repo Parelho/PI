@@ -6,8 +6,11 @@ import os
 import random
 import openai
 import re
+from dotenv import load_dotenv
 
-openai.api_key = "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"
+load_dotenv()
+print(os.getenv("api_key"))
+
 
 # Inicializa o pygame
 pygame.init()
@@ -25,7 +28,7 @@ def gerar_texto_chatgpt():
     completion = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
                 messages=[
-                    {"role": "user", "content": "Uma pergunta simples sobre programar em Python. de 4 alternativas, sendo apenas 1 correta informe a resposta correta colocando um * no final daquela alternativa"}
+                    {"role": "user", "content": "Uma pergunta simples sobre programar em Python. de 4 alternativas, sendo apenas 1 correta informe a resposta correta na primeira alternativa"}
                 ]
                 )
 
@@ -364,7 +367,11 @@ class Pergunta(SeletorDeNivel, Jogador):
             pygame.draw.rect(win, "azure4",[250, 300, 200, 100])
             if self.nova_pergunta.collidepoint(mpos) and pygame.mouse.get_pressed()[0] or self.pergunta_ok == False:
                 self.pergunta_ok = True
-                gerar_texto_chatgpt()
+                try:
+                    gerar_texto_chatgpt()
+                except:
+                    win.blit(FONT_LOGIN.render("Erro", True, "black"), (500, 200))
+                    #deixar na tela ate dar tempo de pedir uma pergunta nova
                 time.sleep(1)
 
             global completion
@@ -372,7 +379,7 @@ class Pergunta(SeletorDeNivel, Jogador):
             string = completion.choices[0].message.content
             elementos = re.split(pattern, string)
             elementos = [element for element in elementos if element.strip()]
-
+            
             pergunta = elementos[0]
             win.blit(FONT_PERGUNTA.render(pergunta, True, "black"), (0, 50))
             win.blit(FONT_PERGUNTA.render(elementos[1], True, "black"), (10, 170))
@@ -380,6 +387,7 @@ class Pergunta(SeletorDeNivel, Jogador):
             win.blit(FONT_PERGUNTA.render(elementos[3], True, "black"), (10, 300))
             win.blit(FONT_PERGUNTA.render(elementos[4], True, "black"), (250, 300))
             
+            #Trocar por um shuffle
             if "*" in elementos[1]:
                 elementos[1] = elementos[1].replace('*', '')
                 self.correta = 1
@@ -497,6 +505,7 @@ class Login(Pergunta):
         win.blit(moedas_img, (700, 200))
 
     def banco_de_dados(self, moedas, xp):
+        #colocar um try except caso de timeout, ou tentar repassar para um banco de dados mysql
         with psycopg.connect(
             dbname="neondb",
             user="Parelho",

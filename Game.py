@@ -7,7 +7,7 @@ import random
 import openai
 import re
 
-openai.api_key = "API_KEY_CHATGPT"
+openai.api_key = "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"
 
 # Inicializa o pygame
 pygame.init()
@@ -29,6 +29,7 @@ def gerar_texto_chatgpt():
                     {"role": "user", "content": "Uma pergunta simples sobre programar em Python. de 4 alternativas, sendo apenas 1 correta informe a resposta correta colocando um * no final daquela alternativa"}
                 ]
                 )
+    print(completion.choices[0].message.content)
 
 # Constantes
 win = pygame.display.set_mode((900,600))
@@ -229,6 +230,7 @@ class Pergunta(SeletorDeNivel, Jogador):
         self.correta = 0
         self.acerto = False
         self.erro = False
+        self.tratamento_ok = False
     
     def nivel(self, lv1_aberto, lv2_aberto, lv3_aberto, lv4_aberto, lv5_aberto, lv_endless_aberto, voltar_rect_pergunta, lv_aberto):
         troca_ok = False
@@ -361,6 +363,7 @@ class Pergunta(SeletorDeNivel, Jogador):
             pygame.draw.rect(win, "azure4",[250, 300, 200, 100])
             if self.nova_pergunta.collidepoint(mpos) and pygame.mouse.get_pressed()[0] or self.pergunta_ok == False:
                 self.pergunta_ok = True
+                self.tratamento_ok = False
                 gerar_texto_chatgpt()
                 time.sleep(1)
 
@@ -377,18 +380,20 @@ class Pergunta(SeletorDeNivel, Jogador):
             win.blit(FONT_PERGUNTA.render(elementos[3], True, "black"), (10, 300))
             win.blit(FONT_PERGUNTA.render(elementos[4], True, "black"), (250, 300))
             
-            if "*" in elementos[1]:
-                elementos[1] = elementos[1].replace('*', '')
-                self.correta = 1
-            elif "*" in elementos[2]:
-                elementos[2] = elementos[2].replace('*', '')
-                self.correta = 2
-            elif "*" in elementos[3]:
-                elementos[3] = elementos[3].replace('*', '')
-                self.correta = 3
-            elif "*" in elementos[4]:
-                elementos[4] = elementos[4].replace('*', '')
-                self.correta = 4
+            if not self.tratamento_ok:
+                if "*" in elementos[1]:
+                    elementos[1] = elementos[1].replace('*', '')
+                    self.correta = 1
+                elif "*" in elementos[2]:
+                    elementos[2] = elementos[2].replace('*', '')
+                    self.correta = 2
+                elif "*" in elementos[3]:
+                    elementos[3] = elementos[3].replace('*', '')
+                    self.correta = 3
+                elif "*" in elementos[4]:
+                    elementos[4] = elementos[4].replace('*', '')
+                    self.correta = 4
+                self.tratamento_ok = True
 
             
             if self.resp1.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:

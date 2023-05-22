@@ -7,7 +7,7 @@ import random
 import openai
 import re
 
-openai.api_key = "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"
+openai.api_key = "API_KEY_CHATGPT"
 
 # Inicializa o pygame
 pygame.init()
@@ -524,8 +524,6 @@ class Login(Pergunta):
                             print("Usuario encontrado")
                             self.xp = int(row[2])
                             self.moedas = int(row[3])
-                            coins = self.moedas
-                            print(coins)
                             self.login_pronto = False
                             self.inicio = False
                             self.login = False
@@ -552,11 +550,14 @@ class Login(Pergunta):
                 
                 global boost
                 if boost:
-                    coins_novo = self.moedas - 100
-                    query = f"UPDATE usuario SET moedas = '{coins_novo}' WHERE username = '{self.usuario}';"
-                    cursor.execute(query)
-                    coins = coins_novo
-                    self.moedas = coins_novo
+                    if self.moedas < 100:
+                        boost = False
+                    else:
+                        coins_novo = self.moedas - 100
+                        query = f"UPDATE usuario SET moedas = '{coins_novo}' WHERE username = '{self.usuario}';"
+                        cursor.execute(query)
+                        coins = coins_novo
+                        self.moedas = coins_novo
 
     def fazer_login(self):
         # Mostrando os campos de usuário e senha para o jogador
@@ -733,8 +734,6 @@ while running:
             if boost == True and login.moedas >= 100 and boost_ok == False:
                 login.banco_de_dados(login.moedas, login.xp)
                 boost_ok = True
-            elif login.moedas < 100:
-                boost = False
         elif nivel.lv_aberto:
             pergunta.nivel(nivel.lv1_aberto, nivel.lv2_aberto, nivel.lv3_aberto, nivel.lv4_aberto, nivel.lv5_aberto, nivel.lv_endless_aberto , nivel.voltar_rect_pergunta, nivel.lv_aberto)
             if pergunta.voltar_ok:

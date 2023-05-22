@@ -22,6 +22,7 @@ streak = 0
 coins = 0
 logoff = False
 boost = False
+boost_ok = False
 
 def gerar_texto_chatgpt():
     global completion
@@ -31,6 +32,7 @@ def gerar_texto_chatgpt():
                     {"role": "user", "content": "Uma pergunta simples sobre programar em Python. de 4 alternativas, sendo apenas 1 correta informe a resposta correta na primeira alternativa"}
                 ]
                 )
+    print(completion.choices[0].message.content)
 
 # Constantes
 win = pygame.display.set_mode((900,600))
@@ -118,13 +120,9 @@ class Jogador:
         win.blit(bonus, (20, 20))
         bonus_texto = FONT_LOGIN.render("Boost de Pontos", True, "black")
         win.blit(bonus_texto,(100, 20))
-        global coins
         global boost
-        if self.boost_rect.collidepoint(mpos) and pygame.mouse.get_pressed()[0] and coins >= 100 and boost == False:
+        if self.boost_rect.collidepoint(mpos) and pygame.mouse.get_pressed()[0] and boost == False:
             boost = True
-            self.login.banco_de_dados(login.moedas, login.xp)
-            if boost:
-                print(coins)
 
 class SeletorDeNivel():
     def __init__(self):
@@ -235,6 +233,7 @@ class Pergunta(SeletorDeNivel, Jogador):
         self.correta = 0
         self.acerto = False
         self.erro = False
+        self.tratamento_ok = False
     
     def nivel(self, lv1_aberto, lv2_aberto, lv3_aberto, lv4_aberto, lv5_aberto, lv_endless_aberto, voltar_rect_pergunta, lv_aberto):
         troca_ok = False
@@ -456,9 +455,11 @@ class Resposta(Pergunta):
     def calcular_pontos(self, acertos, streak, level):
         formula = acertos * 100 * level * (1 + streak / 10)
         global boost
+        global boost_ok
         if boost and formula != 0:
             pontos = formula * 1.25
             boost = False
+            boost_ok = False
         else:
             pontos = formula
         return pontos
@@ -472,6 +473,7 @@ class Resposta(Pergunta):
         return moedas_novo
 
 class Login(Pergunta):
+    global coins
     # Método utilizado para permitir a sobrecarga de métodos no Python
     def __init__(self):
         self.inicio = True
@@ -491,7 +493,7 @@ class Login(Pergunta):
         self.usuario = ""
         self.pergunta = Pergunta()
         self.resposta = Resposta()
-        self.moedas = 0
+        self.moedas = coins
         self.xp = 0
     
     def mostrar_xpmoedas(self):
@@ -533,8 +535,6 @@ class Login(Pergunta):
                             print("Usuario encontrado")
                             self.xp = int(row[2])
                             self.moedas = int(row[3])
-                            global coins
-                            coins = self.moedas
                             self.login_pronto = False
                             self.inicio = False
                             self.login = False
@@ -561,12 +561,14 @@ class Login(Pergunta):
                 
                 global boost
                 if boost:
-                    coins_novo = coins - 100
-                    query = f"UPDATE usuario SET moedas = '{coins_novo}' WHERE username = '{self.usuario}';"
-                    cursor.execute(query)
-                    coins = coins_novo
-                    print(coins)
-                    self.moedas = coins
+                    if self.moedas < 100:
+                        boost = False
+                    else:
+                        coins_novo = self.moedas - 100
+                        query = f"UPDATE usuario SET moedas = '{coins_novo}' WHERE username = '{self.usuario}';"
+                        cursor.execute(query)
+                        coins = coins_novo
+                        self.moedas = coins_novo
 
     def fazer_login(self):
         # Mostrando os campos de usuário e senha para o jogador
@@ -740,6 +742,9 @@ while running:
             jogador.opcoes()
         elif jogador.loja_aberta:
             jogador.loja()
+            if boost == True and login.moedas >= 100 and boost_ok == False:
+                login.banco_de_dados(login.moedas, login.xp)
+                boost_ok = True
         elif nivel.lv_aberto:
             pergunta.nivel(nivel.lv1_aberto, nivel.lv2_aberto, nivel.lv3_aberto, nivel.lv4_aberto, nivel.lv5_aberto, nivel.lv_endless_aberto , nivel.voltar_rect_pergunta, nivel.lv_aberto)
             if pergunta.voltar_ok:

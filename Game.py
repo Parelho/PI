@@ -519,68 +519,70 @@ class Login(Pergunta):
         win.blit(moedas_img, (700, 200))
 
     def banco_de_dados(self, moedas, xp):
-        #colocar um try except caso de timeout, ou tentar repassar para um banco de dados mysql
-        with psycopg.connect(
-            dbname="neondb",
-            user="Parelho",
-            password="ns3Nolki1RzC",
-            host="ep-little-field-610508.us-east-2.aws.neon.tech",
-            port= '5432'
-            ) as db:
-            with db.cursor() as cursor:
+        try:
+            with psycopg.connect(
+                dbname="neondb",
+                user="Parelho",
+                password="ns3Nolki1RzC",
+                host="ep-little-field-610508.us-east-2.aws.neon.tech",
+                port= '5432'
+                ) as db:
+                with db.cursor() as cursor:
 
-                if self.cadastro_pronto == True:
-                    add_usuario = "INSERT INTO Usuario VALUES(%s, %s, %s, %s);"
-                    data_usuario = (self.usuario, self.senha, xp, moedas)
-                    cursor.execute(add_usuario, data_usuario)
-                    db.commit()
-                    self.cadastro_pronto = False
-                
-                if self.login_pronto:
-                    query = "SELECT * FROM Usuario"
-                    cursor.execute(query)
-                    rows = cursor.fetchall()
-                    usuario_encontrado = False
-
-                    for row in rows:
-                        if self.usuario == row[0] and self.senha == row[1]:
-                            print("Usuario encontrado")
-                            self.xp = int(row[2])
-                            self.moedas = int(row[3])
-                            self.login_pronto = False
-                            self.inicio = False
-                            self.login = False
-                            usuario_encontrado = True
-                            break
-                    else:
-                        if not usuario_encontrado:
-                            print("Usuario nao encontrado")
-                            self.login_pronto = False
-
-                if pergunta.voltar_ok:
-                    global acertos
-                    global level
-                    global streak
-                    xp_nova = int(self.xp + self.resposta.calcular_xp())
-                    query = f"UPDATE usuario SET xp = '{xp_nova}' WHERE username = '{self.usuario}';"
-                    cursor.execute(query)
-                    self.xp = xp_nova
-                    moedas_nova = int(self.moedas + self.resposta.calcular_moedas())
-                    query = f"UPDATE usuario SET moedas = '{moedas_nova}' WHERE username = '{self.usuario}';"
-                    cursor.execute(query)
-                    self.moedas = moedas_nova
-                    coins = self.moedas
-                
-                global boost
-                if boost:
-                    if self.moedas < 100:
-                        boost = False
-                    else:
-                        coins_novo = self.moedas - 100
-                        query = f"UPDATE usuario SET moedas = '{coins_novo}' WHERE username = '{self.usuario}';"
+                    if self.cadastro_pronto == True:
+                        add_usuario = "INSERT INTO Usuario VALUES(%s, %s, %s, %s);"
+                        data_usuario = (self.usuario, self.senha, xp, moedas)
+                        cursor.execute(add_usuario, data_usuario)
+                        db.commit()
+                        self.cadastro_pronto = False
+                    
+                    if self.login_pronto:
+                        query = "SELECT * FROM Usuario"
                         cursor.execute(query)
-                        coins = coins_novo
-                        self.moedas = coins_novo
+                        rows = cursor.fetchall()
+                        usuario_encontrado = False
+
+                        for row in rows:
+                            if self.usuario == row[0] and self.senha == row[1]:
+                                print("Usuario encontrado")
+                                self.xp = int(row[2])
+                                self.moedas = int(row[3])
+                                self.login_pronto = False
+                                self.inicio = False
+                                self.login = False
+                                usuario_encontrado = True
+                                break
+                        else:
+                            if not usuario_encontrado:
+                                print("Usuario nao encontrado")
+                                self.login_pronto = False
+
+                    if pergunta.voltar_ok:
+                        global acertos
+                        global level
+                        global streak
+                        xp_nova = int(self.xp + self.resposta.calcular_xp())
+                        query = f"UPDATE usuario SET xp = '{xp_nova}' WHERE username = '{self.usuario}';"
+                        cursor.execute(query)
+                        self.xp = xp_nova
+                        moedas_nova = int(self.moedas + self.resposta.calcular_moedas())
+                        query = f"UPDATE usuario SET moedas = '{moedas_nova}' WHERE username = '{self.usuario}';"
+                        cursor.execute(query)
+                        self.moedas = moedas_nova
+                        coins = self.moedas
+                    
+                    global boost
+                    if boost:
+                        if self.moedas < 100:
+                            boost = False
+                        else:
+                            coins_novo = self.moedas - 100
+                            query = f"UPDATE usuario SET moedas = '{coins_novo}' WHERE username = '{self.usuario}';"
+                            cursor.execute(query)
+                            coins = coins_novo
+                            self.moedas = coins_novo
+        except:
+            print("Erro de conexao com o banco de dados")
 
     def fazer_login(self):
         # Mostrando os campos de usuário e senha para o jogador

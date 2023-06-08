@@ -238,6 +238,9 @@ class Pergunta(SeletorDeNivel, Jogador):
         self.correta = 0
         self.acerto = False
         self.erro = False
+        self.shuffle_ok = False
+        self.resp_certa = ""
+        self.respostas = []
     
     def nivel(self, lv1_aberto, lv2_aberto, lv3_aberto, lv4_aberto, lv5_aberto, lv_endless_aberto, voltar_rect_pergunta, lv_aberto):
         troca_ok = False
@@ -373,6 +376,7 @@ class Pergunta(SeletorDeNivel, Jogador):
                 win.blit(FONT_LOGIN.render(f"Aguarde 20 segundos para gerar outra pergunta", True, "black"), (0, 100))
             if self.nova_pergunta.collidepoint(mpos) and pygame.mouse.get_pressed()[0] or self.pergunta_ok == False:
                 self.pergunta_ok = True
+                self.shuffle_ok = False
                 gerar_texto_chatgpt()
 
             global completion
@@ -381,27 +385,33 @@ class Pergunta(SeletorDeNivel, Jogador):
             elementos = re.split(pattern, string)
             elementos = [element for element in elementos if element.strip()]
             
+            
+            if not self.shuffle_ok:
+                self.resp_certa = elementos[1]
+                self.respostas.clear()
+                self.respostas.append(elementos[1])
+                self.respostas.append(elementos[2])
+                self.respostas.append(elementos[3])
+                self.respostas.append(elementos[4])
+                random.shuffle(self.respostas)
+
+                if self.resp_certa in self.respostas[0]:
+                    self.correta = 1
+                elif self.resp_certa in self.respostas[1]:
+                    self.correta = 2
+                elif self.resp_certa in self.respostas[2]:
+                    self.correta = 3
+                elif self.resp_certa in self.respostas[3]:
+                    self.correta = 4
+                
+                self.shuffle_ok = True
+
             pergunta = elementos[0]
             win.blit(FONT_PERGUNTA.render(pergunta, True, "black"), (0, 50))
-            win.blit(FONT_PERGUNTA.render(elementos[1], True, "black"), (10, 170))
-            win.blit(FONT_PERGUNTA.render(elementos[2], True, "black"), (250, 170))
-            win.blit(FONT_PERGUNTA.render(elementos[3], True, "black"), (10, 300))
-            win.blit(FONT_PERGUNTA.render(elementos[4], True, "black"), (250, 300))
-            
-            #Trocar por um shuffle
-            if "*" in elementos[1]:
-                elementos[1] = elementos[1].replace('*', '')
-                self.correta = 1
-            elif "*" in elementos[2]:
-                elementos[2] = elementos[2].replace('*', '')
-                self.correta = 2
-            elif "*" in elementos[3]:
-                elementos[3] = elementos[3].replace('*', '')
-                self.correta = 3
-            elif "*" in elementos[4]:
-                elementos[4] = elementos[4].replace('*', '')
-                self.correta = 4
-
+            win.blit(FONT_PERGUNTA.render(self.respostas[0], True, "black"), (10, 170))
+            win.blit(FONT_PERGUNTA.render(self.respostas[1], True, "black"), (250, 170))
+            win.blit(FONT_PERGUNTA.render(self.respostas[2], True, "black"), (10, 300))
+            win.blit(FONT_PERGUNTA.render(self.respostas[3], True, "black"), (250, 300))
             
             if self.resp1.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
                 if self.correta == 1:

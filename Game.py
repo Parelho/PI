@@ -23,21 +23,18 @@ coins = 0
 logoff = False
 boost = False
 boost_ok = False
-mensagem_on = False
 
 def gerar_texto_chatgpt():
-    global mensagem_on
     try:
         global completion
         completion = openai.ChatCompletion.create(
                     model="gpt-3.5-turbo",
                     messages=[
-                        {"role": "user", "content": "Uma pergunta simples sobre programar em Python. de 4 alternativas, sendo apenas 1 correta informe a resposta correta na primeira alternativa"}
+                        {"role": "user", "content": "Uma pergunta simples com respostas curtas sobre programar em Python. de 4 alternativas, sendo apenas 1 correta informe a resposta correta na primeira alternativa"}
                     ]
                     )
-        mensagem_on = False
     except:
-        mensagem_on = True
+        print("erro de conexao a api da openai")
 
 # Constantes
 win = pygame.display.set_mode((900,600))
@@ -371,9 +368,6 @@ class Pergunta(SeletorDeNivel, Jogador):
             pygame.draw.rect(win, "azure4",[250, 170, 200, 100])
             pygame.draw.rect(win, "azure4",[10, 300, 200, 100])
             pygame.draw.rect(win, "azure4",[250, 300, 200, 100])
-            global mensagem_on
-            if mensagem_on:
-                win.blit(FONT_LOGIN.render(f"Aguarde 20 segundos para gerar outra pergunta", True, "black"), (0, 100))
             if self.nova_pergunta.collidepoint(mpos) and pygame.mouse.get_pressed()[0] or self.pergunta_ok == False:
                 self.pergunta_ok = True
                 self.shuffle_ok = False

@@ -11,7 +11,6 @@ from dotenv import load_dotenv
 load_dotenv()
 openai.api_key = os.getenv("api_key")
 
-
 # Inicializa o pygame
 pygame.init()
 
@@ -143,30 +142,20 @@ class SeletorDeNivel():
         self.lv1 = pygame.Rect(270, 70, 160, 160)
         self.lv2 = pygame.Rect(470, 70, 160, 160)
         self.lv3 = pygame.Rect(270, 245, 160, 160)
-        self.lv4 = pygame.Rect(470, 245, 160, 160)
-        self.lv5 = pygame.Rect(270, 420, 160, 160)
-        self.lv_endless = pygame.Rect(470, 420, 160, 160)
+        self.lv_endless = pygame.Rect(470, 245, 160, 160)
         self.lv1_aberto = False
         self.lv2_aberto = False
         self.lv3_aberto = False
-        self.lv4_aberto = False
-        self.lv5_aberto = False
         self.lv_endless_aberto = False
         self.lv_aberto = False
         self.lv2_desbloqueado = False
         self.lv3_desbloqueado = False
-        self.lv4_desbloqueado = False
-        self.lv5_desbloqueado = False
     
     def selecionar_nivel(self, xp):
-        if xp >= 4000:
-            self.lv5_desbloqueado = True
-        elif xp >= 3000:
-            self.lv4_desbloqueado = True
-        elif xp >= 2000:
-            self.lv3_desbloqueado = True
-        elif xp >= 1000:
+        if xp >= 1000:
             self.lv2_desbloqueado = True
+            if xp >= 2000:
+                self.lv3_desbloqueado = True
     
         cadeado = pygame.image.load(os.path.join("imgs", "Lock.png"))
         pygame.draw.rect(win, "dimgrey",[250, 0, 5 ,600])
@@ -174,8 +163,8 @@ class SeletorDeNivel():
         win.blit(FONT_LOGIN.render("Selecionar nivel", True, "black"), (350, 0))
         pygame.draw.circle(win, "black",[350, 150], 80)
         win.blit(FONT_NIVEL.render("1", True, "white"), (325, 90))
-        pygame.draw.circle(win, "black",[550, 500], 80)
-        win.blit(FONT_NIVEL.render("INF", True, "white"), (490, 440))
+        pygame.draw.circle(win, "black",[550, 325], 80)
+        win.blit(FONT_NIVEL.render("INF", True, "white"), (490, 265))
         
         if self.lv2_desbloqueado:
             pygame.draw.circle(win, "black",[550, 150], 80)
@@ -189,18 +178,6 @@ class SeletorDeNivel():
         else:
             pygame.draw.circle(win, "azure4",[350, 325], 80)
             win.blit(cadeado, (325, 300))
-        if self.lv4_desbloqueado:
-            pygame.draw.circle(win, "black",[550, 325], 80)
-            win.blit(FONT_NIVEL.render("4", True, "white"), (525, 265))
-        else:
-            pygame.draw.circle(win, "azure4",[550, 325], 80)
-            win.blit(cadeado, (525, 300))
-        if self.lv5_desbloqueado:
-            pygame.draw.circle(win, "black",[350, 500], 80)
-            win.blit(FONT_NIVEL.render("5", True, "white"), (325, 440))
-        else:
-            pygame.draw.circle(win, "azure4",[350, 500], 80)
-            win.blit(cadeado, (325, 475))
         mpos = pygame.mouse.get_pos()
 
         if self.lv1.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
@@ -212,12 +189,6 @@ class SeletorDeNivel():
         elif self.lv3.collidepoint(mpos) and pygame.mouse.get_pressed()[0] and xp >= 2000:
             self.lv_aberto = True
             self.lv3_aberto = True
-        elif self.lv4.collidepoint(mpos) and pygame.mouse.get_pressed()[0] and xp >= 3000:
-            self.lv_aberto = True
-            self.lv4_aberto = True
-        elif self.lv5.collidepoint(mpos) and pygame.mouse.get_pressed()[0] and xp >= 4000:
-            self.lv_aberto = True
-            self.lv5_aberto = True
         elif self.lv_endless.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
             self.lv_aberto = True
             self.lv_endless_aberto = True
@@ -226,8 +197,6 @@ class SeletorDeNivel():
             self.lv1_aberto = False
             self.lv2_aberto = False
             self.lv3_aberto = False
-            self.lv4_aberto = False
-            self.lv5_aberto = False
             self.lv_endless_aberto = False
 
 class Pergunta(SeletorDeNivel, Jogador):
@@ -235,6 +204,10 @@ class Pergunta(SeletorDeNivel, Jogador):
         self.voltar_ok = False
         self.perguntas_lv1 = ["7 // 2 vale quanto?", "print 'Hello, ', 'world', tera qual resultado no console?'", "10 % 2 vale quanto?", "Qual o simbolo utilizado para adicionar comentarios?", "100 / 0 vale quanto?"]
         self.lv1_index = random.randint(0, len(self.perguntas_lv1) - 1)
+        self.perguntas_lv2 = ["print('Hello' + 'world') terá qual resultado?", "idade = 7 + 5 = 4, idade terá qual valor?", "7.5 // 2 vale quanto", "Como posso criar uma função em Python?", "Como posso contar a frequência de elementos em uma lista em Python?"]
+        self.lv2_index = random.randint(0, len(self.perguntas_lv2) - 1)
+        self.perguntas_lv3 = ["Como posso verificar se uma lista está vazia em Python?", "Como posso converter uma string em maiúsculas em Python?", "Como posso criar um dicionário vazio em Python?", "Como posso criar uma classe em python?", "Como faço para instalar um pacote externo em Python usando o pip?"]
+        self.lv3_index = random.randint(0, len(self.perguntas_lv3) - 1)
         self.resp1 = pygame.Rect(10, 170, 200, 100)
         self.resp2 = pygame.Rect(250, 170, 200, 100)
         self.resp3 = pygame.Rect(10, 300, 200, 100)
@@ -250,7 +223,7 @@ class Pergunta(SeletorDeNivel, Jogador):
         self.resp_certa = ""
         self.respostas = []
     
-    def nivel(self, lv1_aberto, lv2_aberto, lv3_aberto, lv4_aberto, lv5_aberto, lv_endless_aberto, voltar_rect_pergunta, lv_aberto):
+    def nivel(self, lv1_aberto, lv2_aberto, lv3_aberto, lv_endless_aberto, voltar_rect_pergunta, lv_aberto):
         troca_ok = False
         global level
         global acertos
@@ -423,16 +396,330 @@ class Pergunta(SeletorDeNivel, Jogador):
                         streak = 0
         elif lv2_aberto:
             level = 2
+            pygame.draw.rect(win, "azure4",[10, 170, 200, 100])
+            pygame.draw.rect(win, "azure4",[250, 170, 200, 100])
+            pygame.draw.rect(win, "azure4",[10, 300, 200, 100])
+            pygame.draw.rect(win, "azure4",[250, 300, 200, 100])
             win.blit(FONT_LOGIN.render("Nivel 2", True, "black"), (400, 0))
+            win.blit(FONT_PERGUNTA.render(self.perguntas_lv2[self.lv2_index], True, "black"), (20, 40))
+            if self.perguntas_lv2[self.lv2_index] == "print('Hello' + 'world') terá qual resultado?":
+                win.blit(FONT_PERGUNTA.render("Hello world", True, "black"), (10, 170))
+                win.blit(FONT_PERGUNTA.render("Helloworld", True, "black"), (250, 170))
+                win.blit(FONT_PERGUNTA.render("Vai dar erro de compilação", True, "black"), (10, 300))
+                win.blit(FONT_PERGUNTA.render("Hello+world", True, "black"), (250, 300))
+                if self.resp1.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    if shield:
+                        shield = False
+                        time.sleep(0.5)
+                    else:
+                        streak = 0
+                elif self.resp2.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    acertos += 1
+                    streak += 1
+                    while troca_ok == False:
+                        self.lv2_index = random.randint(0, len(self.perguntas_lv2) - 1)
+                        if self.lv2_index != 0:
+                            troca_ok = True
+                            time.sleep(0.5)
+                elif self.resp3.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    if shield:
+                        shield = False
+                        time.sleep(0.5)
+                    else:
+                        streak = 0
+                elif self.resp4.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    if shield:
+                        shield = False
+                        time.sleep(0.5)
+                    else:
+                        streak = 0
+            elif self.perguntas_lv2[self.lv2_index] == "idade = 7 + 5 = 4, idade terá qual valor?":
+                win.blit(FONT_PERGUNTA.render("idade = 4", True, "black"), (10, 170))
+                win.blit(FONT_PERGUNTA.render("idade = 12", True, "black"), (250, 170))
+                win.blit(FONT_PERGUNTA.render("Vai dar erro de sintaxe", True, "black"), (10, 300))
+                win.blit(FONT_PERGUNTA.render("idade = 8", True, "black"), (250, 300))
+                if self.resp1.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    if shield:
+                        shield = False
+                        time.sleep(0.5)
+                    else:
+                        streak = 0
+                elif self.resp2.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    if shield:
+                        shield = False
+                        time.sleep(0.5)
+                    else:
+                        streak = 0
+                elif self.resp3.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    while troca_ok == False:
+                        self.lv2_index = random.randint(0, len(self.perguntas_lv2) - 1)
+                        if self.lv2_index != 1:
+                            troca_ok = True
+                            time.sleep(0.5)
+                    acertos += 1
+                    streak += 1
+                elif self.resp4.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    if shield:
+                        shield = False
+                        time.sleep(0.5)
+                    else:
+                        streak = 0
+            elif self.perguntas_lv2[self.lv2_index] == "7.5 // 2 vale quanto":
+                win.blit(FONT_PERGUNTA.render("3", True, "black"), (10, 170))
+                win.blit(FONT_PERGUNTA.render("3.5, ", True, "black"), (250, 170))
+                win.blit(FONT_PERGUNTA.render("4", True, "black"), (10, 300))
+                win.blit(FONT_PERGUNTA.render("Vai dar erro de compilação", True, "black"), (250, 300))
+                if self.resp1.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    acertos += 1
+                    streak += 1
+                    while troca_ok == False:
+                        self.lv2_index = random.randint(0, len(self.perguntas_lv2) - 1)
+                        if self.lv2_index != 2:
+                            troca_ok = True
+                            time.sleep(0.5)
+                elif self.resp2.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    if shield:
+                        shield = False
+                        time.sleep(0.5)
+                    else:
+                        streak = 0
+                elif self.resp3.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    if shield:
+                        shield = False
+                        time.sleep(0.5)
+                    else:
+                        streak = 0
+                elif self.resp4.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    if shield:
+                        shield = False
+                        time.sleep(0.5)
+                    else:
+                        streak = 0
+            elif self.perguntas_lv2[self.lv2_index] == "Como posso criar uma função em Python?":
+                win.blit(FONT_PERGUNTA.render("def", True, "black"), (10, 170))
+                win.blit(FONT_PERGUNTA.render("func", True, "black"), (250, 170))
+                win.blit(FONT_PERGUNTA.render("method", True, "black"), (10, 300))
+                win.blit(FONT_PERGUNTA.render("class", True, "black"), (250, 300))
+                if self.resp1.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    acertos += 1
+                    streak += 1
+                    while troca_ok == False:
+                        self.lv2_index = random.randint(0, len(self.perguntas_lv2) - 1)
+                        if self.lv2_index != 3:
+                            troca_ok = True
+                            time.sleep(0.5)
+                elif self.resp2.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    if shield:
+                        shield = False
+                        time.sleep(0.5)
+                    else:
+                        streak = 0
+                elif self.resp3.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    if shield:
+                        shield = False
+                        time.sleep(0.5)
+                    else:
+                        streak = 0
+                elif self.resp4.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    if shield:
+                        shield = False
+                        time.sleep(0.5)
+                    else:
+                        streak = 0
+            elif self.perguntas_lv2[self.lv2_index] == "Como posso contar a frequência de elementos em uma lista em Python?":
+                win.blit(FONT_PERGUNTA.render("len()", True, "black"), (10, 170))
+                win.blit(FONT_PERGUNTA.render("sum()", True, "black"), (250, 170))
+                win.blit(FONT_PERGUNTA.render("count()", True, "black"), (10, 300))
+                win.blit(FONT_PERGUNTA.render("find()", True, "black"), (250, 300))
+                if self.resp1.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    if shield:
+                        shield = False
+                        time.sleep(0.5)
+                    else:
+                        streak = 0
+                elif self.resp2.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    if shield:
+                        shield = False
+                        time.sleep(0.5)
+                    else:
+                        streak = 0
+                elif self.resp3.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    while troca_ok == False:
+                        self.lv2_index = random.randint(0, len(self.perguntas_lv2) - 1)
+                        if self.lv2_index != 4:
+                            troca_ok = True
+                            time.sleep(0.5)
+                    acertos += 1
+                    streak += 1
+                elif self.resp4.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    if shield:
+                        shield = False
+                        time.sleep(0.5)
+                    else:
+                        streak = 0
         elif lv3_aberto:
             level = 3
+            pygame.draw.rect(win, "azure4",[10, 170, 200, 100])
+            pygame.draw.rect(win, "azure4",[250, 170, 200, 100])
+            pygame.draw.rect(win, "azure4",[10, 300, 200, 100])
+            pygame.draw.rect(win, "azure4",[250, 300, 200, 100])
             win.blit(FONT_LOGIN.render("Nivel 3", True, "black"), (400, 0))
-        elif lv4_aberto:
-            level = 4
-            win.blit(FONT_LOGIN.render("Nivel 4", True, "black"), (400, 0))
-        elif lv5_aberto:
-            level = 5
-            win.blit(FONT_LOGIN.render("Nivel 5", True, "black"), (400, 0))
+            win.blit(FONT_PERGUNTA.render(self.perguntas_lv3[self.lv3_index], True, "black"), (20, 40))
+            if self.perguntas_lv3[self.lv3_index] == "Como posso verificar se uma lista está vazia em Python?":
+                win.blit(FONT_PERGUNTA.render("is_empty()", True, "black"), (10, 170))
+                win.blit(FONT_PERGUNTA.render("len()", True, "black"), (250, 170))
+                win.blit(FONT_PERGUNTA.render("check_empty()", True, "black"), (10, 300))
+                win.blit(FONT_PERGUNTA.render("empty()", True, "black"), (250, 300))
+                if self.resp1.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    if shield:
+                        shield = False
+                        time.sleep(0.5)
+                    else:
+                        streak = 0
+                elif self.resp2.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    acertos += 1
+                    streak += 1
+                    while troca_ok == False:
+                        self.lv3_index = random.randint(0, len(self.perguntas_lv3) - 1)
+                        if self.lv3_index != 0:
+                            troca_ok = True
+                            time.sleep(0.5)
+                elif self.resp3.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    if shield:
+                        shield = False
+                        time.sleep(0.5)
+                    else:
+                        streak = 0
+                elif self.resp4.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    if shield:
+                        shield = False
+                        time.sleep(0.5)
+                    else:
+                        streak = 0
+            elif self.perguntas_lv3[self.lv3_index] == "Como posso converter uma string em maiúsculas em Python?":
+                win.blit(FONT_PERGUNTA.render("uppercase()", True, "black"), (10, 170))
+                win.blit(FONT_PERGUNTA.render("convert_upper()", True, "black"), (250, 170))
+                win.blit(FONT_PERGUNTA.render("upper()", True, "black"), (10, 300))
+                win.blit(FONT_PERGUNTA.render("to_upper()", True, "black"), (250, 300))
+                if self.resp1.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    if shield:
+                        shield = False
+                        time.sleep(0.5)
+                    else:
+                        streak = 0
+                elif self.resp2.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    if shield:
+                        shield = False
+                        time.sleep(0.5)
+                    else:
+                        streak = 0
+                elif self.resp3.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    while troca_ok == False:
+                        self.lv3_index = random.randint(0, len(self.perguntas_lv3) - 1)
+                        if self.lv3_index != 1:
+                            troca_ok = True
+                            time.sleep(0.5)
+                    acertos += 1
+                    streak += 1
+                elif self.resp4.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    if shield:
+                        shield = False
+                        time.sleep(0.5)
+                    else:
+                        streak = 0
+            elif self.perguntas_lv3[self.lv3_index] == "Como posso criar um dicionário vazio em Python?":
+                win.blit(FONT_PERGUNTA.render("dicionario = {}", True, "black"), (10, 170))
+                win.blit(FONT_PERGUNTA.render("dicionario = dict", True, "black"), (250, 170))
+                win.blit(FONT_PERGUNTA.render("dicionario = dict()", True, "black"), (10, 300))
+                win.blit(FONT_PERGUNTA.render("dicionario = []", True, "black"), (250, 300))
+                if self.resp1.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    acertos += 1
+                    streak += 1
+                    while troca_ok == False:
+                        self.lv3_index = random.randint(0, len(self.perguntas_lv3) - 1)
+                        if self.lv3_index != 2:
+                            troca_ok = True
+                            time.sleep(0.5)
+                elif self.resp2.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    if shield:
+                        shield = False
+                        time.sleep(0.5)
+                    else:
+                        streak = 0
+                elif self.resp3.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    if shield:
+                        shield = False
+                        time.sleep(0.5)
+                    else:
+                        streak = 0
+                elif self.resp4.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    if shield:
+                        shield = False
+                        time.sleep(0.5)
+                    else:
+                        streak = 0
+            elif self.perguntas_lv3[self.lv3_index] == "Como posso criar uma classe em python?":
+                win.blit(FONT_PERGUNTA.render("class", True, "black"), (10, 170))
+                win.blit(FONT_PERGUNTA.render("def", True, "black"), (250, 170))
+                win.blit(FONT_PERGUNTA.render("public class", True, "black"), (10, 300))
+                win.blit(FONT_PERGUNTA.render("<nome_da_classe>", True, "black"), (250, 300))
+                if self.resp1.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    acertos += 1
+                    streak += 1
+                    while troca_ok == False:
+                        self.lv3_index = random.randint(0, len(self.perguntas_lv3) - 1)
+                        if self.lv3_index != 3:
+                            troca_ok = True
+                            time.sleep(0.5)
+                elif self.resp2.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    if shield:
+                        shield = False
+                        time.sleep(0.5)
+                    else:
+                        streak = 0
+                elif self.resp3.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    if shield:
+                        shield = False
+                        time.sleep(0.5)
+                    else:
+                        streak = 0
+                elif self.resp4.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    if shield:
+                        shield = False
+                        time.sleep(0.5)
+                    else:
+                        streak = 0
+            elif self.perguntas_lv3[self.lv3_index] == "Como faço para instalar um pacote externo em Python usando o pip?":
+                win.blit(FONT_PERGUNTA.render("pip install 'nomedopacote'", True, "black"), (10, 170))
+                win.blit(FONT_PERGUNTA.render("python -m pip install nomedopacote", True, "black"), (250, 170))
+                win.blit(FONT_PERGUNTA.render("pip install nomedopacote", True, "black"), (10, 300))
+                win.blit(FONT_PERGUNTA.render("pip install nomedopacote==versao", True, "black"), (250, 300))
+                if self.resp1.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    if shield:
+                        shield = False
+                        time.sleep(0.5)
+                    else:
+                        streak = 0
+                elif self.resp2.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    if shield:
+                        shield = False
+                        time.sleep(0.5)
+                    else:
+                        streak = 0
+                elif self.resp3.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    while troca_ok == False:
+                        self.lv3_index = random.randint(0, len(self.perguntas_lv3) - 1)
+                        if self.lv3_index != 4:
+                            troca_ok = True
+                            time.sleep(0.5)
+                    acertos += 1
+                    streak += 1
+                elif self.resp4.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+                    if shield:
+                        shield = False
+                        time.sleep(0.5)
+                    else:
+                        streak = 0
         elif lv_endless_aberto:
             win.blit(FONT_LOGIN.render("Nivel INF", True, "black"), (400, 0))
             win.blit(FONT_LOGIN.render("Gerar outra pergunta", True, "black"), (325, 425))
@@ -524,6 +811,8 @@ class Pergunta(SeletorDeNivel, Jogador):
                     streak = 0
                     level = 0
                     self.lv1_index = random.randint(0, len(self.perguntas_lv1) - 1)
+                    self.lv2_index = random.randint(0, len(self.perguntas_lv2) - 1)
+                    self.lv3_index = random.randint(0, len(self.perguntas_lv3) - 1)
                     self.respostas_ok = False
     
 class Resposta(Pergunta):
@@ -838,7 +1127,7 @@ while running:
             if shield == True and login.moedas >= 100 and shield_ok == False:
                 login.banco_de_dados(login.moedas, login.xp)
         elif nivel.lv_aberto:
-            pergunta.nivel(nivel.lv1_aberto, nivel.lv2_aberto, nivel.lv3_aberto, nivel.lv4_aberto, nivel.lv5_aberto, nivel.lv_endless_aberto , nivel.voltar_rect_pergunta, nivel.lv_aberto)
+            pergunta.nivel(nivel.lv1_aberto, nivel.lv2_aberto, nivel.lv3_aberto, nivel.lv_endless_aberto , nivel.voltar_rect_pergunta, nivel.lv_aberto)
             if pergunta.voltar_ok:
                 nivel.lv_aberto = False
                 pergunta.voltar_ok = False

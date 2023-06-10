@@ -23,6 +23,8 @@ coins = 0
 logoff = False
 boost = False
 boost_ok = False
+shield = False
+shield_ok = False
 
 def gerar_texto_chatgpt():
     try:
@@ -56,6 +58,7 @@ class Jogador:
         self.loja_rect = pygame.Rect(120, 500, 100, 100)
         self.voltar_rect = pygame.Rect(400, 500, 100, 30)
         self.boost_rect = pygame.Rect(20, 20, 80, 80)
+        self.shield_rect = pygame.Rect(20, 220, 128, 128)
         self.logout_rect = pygame.Rect(20, 450, 128, 128)
         self.opcoes_aberto = False
         self.loja_aberta = False
@@ -125,6 +128,14 @@ class Jogador:
         global boost
         if self.boost_rect.collidepoint(mpos) and pygame.mouse.get_pressed()[0] and boost == False:
             boost = True
+        
+        protecao = pygame.image.load(os.path.join("imgs", "shield.png"))
+        win.blit(protecao, (20, 220))
+        protecao_texto = FONT_LOGIN.render("Proteção de Streak", True, "black")
+        win.blit(protecao_texto, (150, 220))
+        global shield
+        if self.shield_rect.collidepoint(mpos) and pygame.mouse.get_pressed()[0] and shield == False:
+            shield = True
 
 class SeletorDeNivel():
     def __init__(self):
@@ -244,6 +255,7 @@ class Pergunta(SeletorDeNivel, Jogador):
         global level
         global acertos
         global streak
+        global shield
         win.blit(FONT_LOGIN.render("Streak: " + str(streak), True, "black"), (600, 0))
         mpos = pygame.mouse.get_pos()
         if lv1_aberto:
@@ -260,7 +272,11 @@ class Pergunta(SeletorDeNivel, Jogador):
                 win.blit(FONT_PERGUNTA.render("Vai dar erro de compilação", True, "black"), (10, 300))
                 win.blit(FONT_PERGUNTA.render("4", True, "black"), (250, 300))
                 if self.resp1.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
-                    streak = 0
+                    if shield:
+                        shield = False
+                        time.sleep(0.5)
+                    else:
+                        streak = 0
                 elif self.resp2.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
                     acertos += 1
                     streak += 1
@@ -270,18 +286,34 @@ class Pergunta(SeletorDeNivel, Jogador):
                             troca_ok = True
                             time.sleep(0.5)
                 elif self.resp3.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
-                    streak = 0
+                    if shield:
+                        shield = False
+                        time.sleep(0.5)
+                    else:
+                        streak = 0
                 elif self.resp4.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
-                    streak = 0
+                    if shield:
+                        shield = False
+                        time.sleep(0.5)
+                    else:
+                        streak = 0
             elif self.perguntas_lv1[self.lv1_index] == "print 'Hello, ', 'world', tera qual resultado no console?'":
                 win.blit(FONT_PERGUNTA.render("Hello, world", True, "black"), (10, 170))
                 win.blit(FONT_PERGUNTA.render("Hello, ", True, "black"), (250, 170))
                 win.blit(FONT_PERGUNTA.render("Vai dar erro de compilação", True, "black"), (10, 300))
                 win.blit(FONT_PERGUNTA.render("world", True, "black"), (250, 300))
                 if self.resp1.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
-                    streak = 0
+                    if shield:
+                        shield = False
+                        time.sleep(0.5)
+                    else:
+                        streak = 0
                 elif self.resp2.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
-                    streak = 0
+                    if shield:
+                        shield = False
+                        time.sleep(0.5)
+                    else:
+                        streak = 0
                 elif self.resp3.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
                     while troca_ok == False:
                         self.lv1_index = random.randint(0, len(self.perguntas_lv1) - 1)
@@ -291,7 +323,11 @@ class Pergunta(SeletorDeNivel, Jogador):
                     acertos += 1
                     streak += 1
                 elif self.resp4.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
-                    streak = 0
+                    if shield:
+                        shield = False
+                        time.sleep(0.5)
+                    else:
+                        streak = 0
             elif self.perguntas_lv1[self.lv1_index] == "10 % 2 vale quanto?":
                 win.blit(FONT_PERGUNTA.render("0", True, "black"), (10, 170))
                 win.blit(FONT_PERGUNTA.render("5, ", True, "black"), (250, 170))
@@ -306,11 +342,23 @@ class Pergunta(SeletorDeNivel, Jogador):
                             troca_ok = True
                             time.sleep(0.5)
                 elif self.resp2.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
-                    streak = 0
+                    if shield:
+                        shield = False
+                        time.sleep(0.5)
+                    else:
+                        streak = 0
                 elif self.resp3.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
-                    streak = 0
+                    if shield:
+                        shield = False
+                        time.sleep(0.5)
+                    else:
+                        streak = 0
                 elif self.resp4.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
-                    streak = 0
+                    if shield:
+                        shield = False
+                        time.sleep(0.5)
+                    else:
+                        streak = 0
             elif self.perguntas_lv1[self.lv1_index] == "Qual o simbolo utilizado para adicionar comentarios?":
                 win.blit(FONT_PERGUNTA.render("#", True, "black"), (10, 170))
                 win.blit(FONT_PERGUNTA.render("//", True, "black"), (250, 170))
@@ -325,20 +373,40 @@ class Pergunta(SeletorDeNivel, Jogador):
                             troca_ok = True
                             time.sleep(0.5)
                 elif self.resp2.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
-                    streak = 0
+                    if shield:
+                        shield = False
+                        time.sleep(0.5)
+                    else:
+                        streak = 0
                 elif self.resp3.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
-                    streak = 0
+                    if shield:
+                        shield = False
+                        time.sleep(0.5)
+                    else:
+                        streak = 0
                 elif self.resp4.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
-                    streak = 0
+                    if shield:
+                        shield = False
+                        time.sleep(0.5)
+                    else:
+                        streak = 0
             elif self.perguntas_lv1[self.lv1_index] == "100 / 0 vale quanto?":
                 win.blit(FONT_PERGUNTA.render("0", True, "black"), (10, 170))
                 win.blit(FONT_PERGUNTA.render("100", True, "black"), (250, 170))
                 win.blit(FONT_PERGUNTA.render("Vai dar erro de compilação", True, "black"), (10, 300))
                 win.blit(FONT_PERGUNTA.render("False", True, "black"), (250, 300))
                 if self.resp1.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
-                    streak = 0
+                    if shield:
+                        shield = False
+                        time.sleep(0.5)
+                    else:
+                        streak = 0
                 elif self.resp2.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
-                    streak = 0
+                    if shield:
+                        shield = False
+                        time.sleep(0.5)
+                    else:
+                        streak = 0
                 elif self.resp3.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
                     while troca_ok == False:
                         self.lv1_index = random.randint(0, len(self.perguntas_lv1) - 1)
@@ -348,7 +416,11 @@ class Pergunta(SeletorDeNivel, Jogador):
                     acertos += 1
                     streak += 1
                 elif self.resp4.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
-                    streak = 0
+                    if shield:
+                        shield = False
+                        time.sleep(0.5)
+                    else:
+                        streak = 0
         elif lv2_aberto:
             level = 2
             win.blit(FONT_LOGIN.render("Nivel 2", True, "black"), (400, 0))
@@ -573,8 +645,18 @@ class Login(Pergunta):
                             coins_novo = self.moedas - 100
                             query = f"UPDATE usuario SET moedas = '{coins_novo}' WHERE username = '{self.usuario}';"
                             cursor.execute(query)
-                            coins = coins_novo
                             self.moedas = coins_novo
+                    global shield
+                    global shield_ok
+                    if shield:
+                        if self.moedas < 100:
+                            shield = False
+                        else:
+                            coins_novo = self.moedas - 100
+                            query = f"UPDATE usuario SET moedas = '{coins_novo}' WHERE username = '{self.usuario}';"
+                            cursor.execute(query)
+                            self.moedas = coins_novo
+                            shield_ok = True
         except:
             print("Erro de conexao com o banco de dados")
 
@@ -753,6 +835,8 @@ while running:
             if boost == True and login.moedas >= 100 and boost_ok == False:
                 login.banco_de_dados(login.moedas, login.xp)
                 boost_ok = True
+            if shield == True and login.moedas >= 100 and shield_ok == False:
+                login.banco_de_dados(login.moedas, login.xp)
         elif nivel.lv_aberto:
             pergunta.nivel(nivel.lv1_aberto, nivel.lv2_aberto, nivel.lv3_aberto, nivel.lv4_aberto, nivel.lv5_aberto, nivel.lv_endless_aberto , nivel.voltar_rect_pergunta, nivel.lv_aberto)
             if pergunta.voltar_ok:

@@ -59,15 +59,13 @@ FONT_NIVEL = pygame.font.SysFont("arial", 100)
 # Classes
 class Jogador:
     def __init__(self):
-        self.tema = "oldlace"
+        self.tema = "white"
         self.tema_rect = pygame.Rect(675, 100, 200, 100)
-        self.tema_roxo_rect = pygame.Rect(450, 100, 200, 100)
-        self.tema_verde_rect = pygame.Rect(450, 250, 200, 100)
         self.tema_azul_rect = pygame.Rect(675, 250, 200, 100)
         self.engrenagem_rect = pygame.Rect(20, 500, 100, 100)
         self.loja_rect = pygame.Rect(120, 500, 100, 100)
         self.voltar_rect = pygame.Rect(400, 500, 100, 30)
-        self.boost_rect = pygame.Rect(20, 20, 80, 80)
+        self.boost_rect = pygame.Rect(20, 420, 128, 128)
         self.shield_rect = pygame.Rect(20, 220, 128, 128)
         self.logout_rect = pygame.Rect(20, 450, 128, 128)
         self.cosmetico1_rect = pygame.Rect(750, 100, 64, 64)
@@ -103,36 +101,23 @@ class Jogador:
 
     def opcoes(self):
         mpos = pygame.mouse.get_pos()
-        if self.tema_roxo_rect.collidepoint(mpos):
+        if self.tema_rect.collidepoint(mpos):
             if pygame.mouse.get_pressed()[0]:
-                self.tema = "mediumpurple4"
-        elif self.tema_rect.collidepoint(mpos):
-            if pygame.mouse.get_pressed()[0]:
-                self.tema = "oldlace"
-        elif self.tema_verde_rect.collidepoint(mpos):
-            if pygame.mouse.get_pressed()[0]:
-                self.tema = "lightgreen"
+                self.tema = "white"
         elif self.tema_azul_rect.collidepoint(mpos):
             if pygame.mouse.get_pressed()[0]:
                 self.tema = "royalblue3"
 
-
-        pygame.draw.rect(win, self.tema, self.tema_roxo_rect)
-        win.fill(self.tema, self.tema_roxo_rect)
-
-        pygame.draw.rect(win, "black",[445, 95, 210, 110])
-        pygame.draw.rect(win, "mediumpurple4",[450, 100, 200, 100])
         pygame.draw.rect(win, "black",[670, 95, 210, 110])
-        pygame.draw.rect(win, "oldlace",[675, 100, 200, 100])
-        pygame.draw.rect(win, "black",[445, 245, 210, 110])
-        pygame.draw.rect(win, "lightgreen",[450, 250, 200, 100])
+        pygame.draw.rect(win, "white",[675, 100, 200, 100])
         pygame.draw.rect(win, "black",[670, 245, 210, 110])
         pygame.draw.rect(win, "royalblue3",[675, 250, 200, 100])
 
         temas = FONT_LOGIN.render("Clique para mudar de tema", True, "black")
         win.blit(temas,(450, 0))
 
-        voltar = FONT_LOGIN.render("Voltar", True, "black")
+        pygame.draw.rect(win, "orange2",[400, 500, 75, 30], 0, 3)
+        voltar = FONT_LOGIN.render("Voltar", True, "white")
         win.blit(voltar,(400, 500))
         if self.voltar_rect.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
             self.opcoes_aberto = False
@@ -155,16 +140,23 @@ class Jogador:
         
     def loja(self):
         mpos = pygame.mouse.get_pos()
+        texto = FONT_LOGIN.render("Clique em um item para comprar", True, "black")
+        win.blit(texto,(300, 0))
+        powerups = FONT_LOGIN.render("Powerup = 100 moedas", True, "black")
+        win.blit(powerups,(0, 50))
+        cosmeticos = FONT_LOGIN.render("Cosmeticos = 200 moedas", True, "black")
+        win.blit(cosmeticos,(550, 50))
 
-        voltar = FONT_LOGIN.render("Voltar", True, "black")
+        pygame.draw.rect(win, "orange2",[400, 500, 75, 30], 0, 3)
+        voltar = FONT_LOGIN.render("Voltar", True, "white")
         win.blit(voltar,(400, 500))
         if self.voltar_rect.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
             self.loja_aberta = False
         
         bonus = pygame.image.load(os.path.join("imgs", "Boost.png"))
-        win.blit(bonus, (20, 20))
+        win.blit(bonus, (20, 420))
         bonus_texto = FONT_LOGIN.render("Boost de Pontos", True, "black")
-        win.blit(bonus_texto,(100, 20))
+        win.blit(bonus_texto,(150, 420))
         global boost
         if self.boost_rect.collidepoint(mpos) and pygame.mouse.get_pressed()[0] and boost == False:
             boost = True
@@ -177,6 +169,8 @@ class Jogador:
         if self.shield_rect.collidepoint(mpos) and pygame.mouse.get_pressed()[0] and shield == False:
             shield = True
         
+        global mascote
+        win.blit(mascote, (450, 200))
         cosmetico1 = pygame.image.load(os.path.join("imgs", "cosmetic1.png"))
         cosmetico2 = pygame.image.load(os.path.join("imgs", "cosmetic2.png"))
         cosmetico3 = pygame.image.load(os.path.join("imgs", "cosmetic3.png"))
@@ -189,7 +183,6 @@ class Jogador:
         global cosmetico1_ok
         global cosmetico2_ok
         global cosmetico3_ok
-        global mascote
         if self.cosmetico1_rect.collidepoint(mpos) and pygame.mouse.get_pressed()[0] and cosmetico1_desbloqueado == False and cosmetico1_ok == False:
             cosmetico1_desbloqueado = True
         elif self.cosmetico1_rect.collidepoint(mpos) and pygame.mouse.get_pressed()[0] and cosmetico1_ok == True:
@@ -922,7 +915,7 @@ class Login(Pergunta):
         self.senha_rect = pygame.Rect(100, 192, 100, 30)
         self.voltar_rect = pygame.Rect(400, 500, 100, 30)
         self.enviar_rect = pygame.Rect(400, 400, 100 , 30)
-        self.entrar_rect = pygame.Rect(375, 400, 125, 50)
+        self.entrar_rect = pygame.Rect(350, 400, 150, 50)
         self.usuario_click = False
         self.senha_click = False
         self.login_pronto = False
@@ -1105,9 +1098,11 @@ class Login(Pergunta):
         win.blit(usuario, (95, 92))
         senha = FONT_LOGIN.render("Senha: ", True, "black")
         win.blit(senha, (100, 192))
-        voltar = FONT_LOGIN.render("Voltar", True, "black")
+        pygame.draw.rect(win, "orange2",[400, 500, 75, 30], 0, 3)
+        voltar = FONT_LOGIN.render("Voltar", True, "white")
         win.blit(voltar,(400, 500))
-        enviar = FONT_LOGIN.render("Enviar", True, "black")
+        pygame.draw.rect(win, "orange2",[400, 400, 80, 30], 0, 3)
+        enviar = FONT_LOGIN.render("Enviar", True, "white")
         win.blit(enviar, (400, 400))
         mpos = pygame.mouse.get_pos()
 
@@ -1156,15 +1151,17 @@ class Login(Pergunta):
        # Similar ao método de login, fora a parte que está comentada
     def fazer_cadastro(self):
         tela = FONT.render("Cadastro", True, "black")
-        win.blit(tela, (400, 10))
+        win.blit(tela, (350, 10))
         
         usuario = FONT_LOGIN.render("Usuario: ", True, "black")
         win.blit(usuario, (95, 92))
         senha = FONT_LOGIN.render("Senha: ", True, "black")
         win.blit(senha, (100, 192))
-        voltar = FONT_LOGIN.render("Voltar", True, "black")
+        pygame.draw.rect(win, "orange2",[400, 500, 75, 30], 0, 3)
+        voltar = FONT_LOGIN.render("Voltar", True, "white")
         win.blit(voltar,(400, 500))
-        enviar = FONT_LOGIN.render("Enviar", True, "black")
+        pygame.draw.rect(win, "orange2",[400, 400, 80, 30], 0, 3)
+        enviar = FONT_LOGIN.render("Enviar", True, "white")
         win.blit(enviar, (400, 400))
         mpos = pygame.mouse.get_pos()
 
@@ -1209,9 +1206,11 @@ class Login(Pergunta):
             global fechar
             fechar = True
 
-        cadastrar = FONT.render("Cadastrar", True, "black")
+        pygame.draw.rect(win, "orange2",[500, 300, 195, 50], 0, 3)
+        cadastrar = FONT.render("Cadastrar", True, "white")
         win.blit(cadastrar, (500, 300))
-        login = FONT.render("Login", True, "black")
+        pygame.draw.rect(win, "orange2",[200, 300, 125, 60], 0, 3)
+        login = FONT.render("Login", True, "white")
         win.blit(login, (200, 300))
 
         # Checa se o mouse está em cima do botão de cadastro
@@ -1235,8 +1234,9 @@ class Login(Pergunta):
         bem_vindo = FONT.render("Bem-vindo ao CodeQuiz", True, "black")
         win.blit(bem_vindo, (200, 100))
 
-        entrar = FONT.render("Entrar", True, "black")
-        win.blit(entrar, (375, 400))
+        pygame.draw.rect(win, "orange2",[350, 400, 150, 50], 0, 3)
+        entrar = FONT.render("Entrar", True, "white")
+        win.blit(entrar, (360, 400))
 
         mpos = pygame.mouse.get_pos()
         if self.entrar_rect.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:

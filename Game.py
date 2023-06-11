@@ -24,6 +24,7 @@ boost = False
 boost_ok = False
 shield = False
 shield_ok = False
+fechar = False
 
 def gerar_texto_chatgpt():
     try:
@@ -868,6 +869,7 @@ class Login(Pergunta):
         self.inicio = True
         self.login = False
         self.cadastro = False
+        self.sair_rect = pygame.Rect(830, 0, 64, 64)
         self.cadastrar_rect = pygame.Rect(500, 300, 200, 50)
         self.login_rect = pygame.Rect(200, 300, 125, 50)
         self.usuario_rect = pygame.Rect(100, 100, 100, 30)
@@ -1071,6 +1073,13 @@ class Login(Pergunta):
             textinput_usuario.value = ""
             textinput_senha.value = ""
     def tela_inicio(self):
+        mpos = pygame.mouse.get_pos()
+        sair = pygame.image.load(os.path.join("imgs", "Close.png"))
+        win.blit(sair, (830, 0))
+        if self.sair_rect.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+            global fechar
+            fechar = True
+
         bem_vindo = FONT.render("CodeQuiz", True, "black")
         win.blit(bem_vindo, (350, 100))
 
@@ -1080,7 +1089,6 @@ class Login(Pergunta):
         win.blit(login, (200, 300))
 
         # Checa se o mouse está em cima do botão de cadastro
-        mpos = pygame.mouse.get_pos()
         global logoff
         if logoff:
             self.inicio = True
@@ -1113,7 +1121,7 @@ while running:
     events = pygame.event.get()
     # Fecha o loop caso a aba do pygame seja fechada
     for event in events:
-        if event.type == pygame.QUIT:
+        if event.type == pygame.QUIT or fechar == True:
             running = False
     # Coloca o tema do fundo na tela atrás de todo o resto que for desenhado
     win.fill(jogador.tema)

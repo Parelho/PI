@@ -1099,6 +1099,8 @@ class Login(Pergunta):
 
     def fazer_login(self):
         # Mostrando os campos de usuário e senha para o jogador
+        tela = FONT.render("Login", True, "black")
+        win.blit(tela, (400, 10))
         usuario = FONT_LOGIN.render("Usuario: ", True, "black")
         win.blit(usuario, (95, 92))
         senha = FONT_LOGIN.render("Senha: ", True, "black")
@@ -1153,6 +1155,9 @@ class Login(Pergunta):
 
        # Similar ao método de login, fora a parte que está comentada
     def fazer_cadastro(self):
+        tela = FONT.render("Cadastro", True, "black")
+        win.blit(tela, (400, 10))
+        
         usuario = FONT_LOGIN.render("Usuario: ", True, "black")
         win.blit(usuario, (95, 92))
         senha = FONT_LOGIN.render("Senha: ", True, "black")

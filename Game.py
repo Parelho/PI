@@ -25,6 +25,13 @@ boost_ok = False
 shield = False
 shield_ok = False
 fechar = False
+cosmetico1_desbloqueado = False
+cosmetico2_desbloqueado = False
+cosmetico3_desbloqueado = False
+cosmetico1_ok = False
+cosmetico2_ok = False
+cosmetico3_ok = False
+mascote = pygame.image.load(os.path.join("imgs", "Mascote.png"))
 
 def gerar_texto_chatgpt():
     try:
@@ -63,6 +70,9 @@ class Jogador:
         self.boost_rect = pygame.Rect(20, 20, 80, 80)
         self.shield_rect = pygame.Rect(20, 220, 128, 128)
         self.logout_rect = pygame.Rect(20, 450, 128, 128)
+        self.cosmetico1_rect = pygame.Rect(750, 100, 64, 64)
+        self.cosmetico2_rect = pygame.Rect(750, 200, 64, 64)
+        self.cosmetico3_rect = pygame.Rect(750, 300, 64, 64)
         self.opcoes_aberto = False
         self.loja_aberta = False
         self.login = Login()
@@ -77,7 +87,7 @@ class Jogador:
             self.loja_aberta = True
     
         #Mascote
-        mascote = pygame.image.load(os.path.join("imgs", "Mascote.png"))
+        global mascote
         win.blit(mascote, (0, 50))
 
         mensagem = FONT_MASCOTE.render("Bem Vindo ao CodeQuiz!", True, "black")
@@ -133,6 +143,14 @@ class Jogador:
             self.opcoes_aberto = False
             global logoff
             logoff = True
+            global mascote
+            mascote = pygame.image.load(os.path.join("imgs", "Mascote.png"))
+            global cosmetico1_ok
+            global cosmetico2_ok
+            global cosmetico3_ok
+            cosmetico1_ok = False
+            cosmetico2_ok = False
+            cosmetico3_ok = False
             time.sleep(0.2)
         
     def loja(self):
@@ -158,6 +176,34 @@ class Jogador:
         global shield
         if self.shield_rect.collidepoint(mpos) and pygame.mouse.get_pressed()[0] and shield == False:
             shield = True
+        
+        cosmetico1 = pygame.image.load(os.path.join("imgs", "cosmetic1.png"))
+        cosmetico2 = pygame.image.load(os.path.join("imgs", "cosmetic2.png"))
+        cosmetico3 = pygame.image.load(os.path.join("imgs", "cosmetic3.png"))
+        win.blit(cosmetico1, (750, 100))
+        win.blit(cosmetico2, (750, 200))
+        win.blit(cosmetico3, (750, 300))
+        global cosmetico1_desbloqueado
+        global cosmetico2_desbloqueado
+        global cosmetico3_desbloqueado
+        global cosmetico1_ok
+        global cosmetico2_ok
+        global cosmetico3_ok
+        global mascote
+        if self.cosmetico1_rect.collidepoint(mpos) and pygame.mouse.get_pressed()[0] and cosmetico1_desbloqueado == False and cosmetico1_ok == False:
+            cosmetico1_desbloqueado = True
+        elif self.cosmetico1_rect.collidepoint(mpos) and pygame.mouse.get_pressed()[0] and cosmetico1_ok == True:
+            mascote = pygame.image.load(os.path.join("imgs", "Mascote1.png"))
+
+        if self.cosmetico2_rect.collidepoint(mpos) and pygame.mouse.get_pressed()[0] and cosmetico2_desbloqueado == False and cosmetico2_ok == False:
+            cosmetico2_desbloqueado = True
+        elif self.cosmetico2_rect.collidepoint(mpos) and pygame.mouse.get_pressed()[0] and cosmetico2_ok == True:
+            mascote = pygame.image.load(os.path.join("imgs", "Mascote2.png"))
+
+        if self.cosmetico3_rect.collidepoint(mpos) and pygame.mouse.get_pressed()[0] and cosmetico3_desbloqueado == False and cosmetico3_ok == False:
+            cosmetico3_desbloqueado = True
+        elif self.cosmetico3_rect.collidepoint(mpos) and pygame.mouse.get_pressed()[0] and cosmetico3_ok == True:
+            mascote = pygame.image.load(os.path.join("imgs", "Mascote3.png"))
 
 class SeletorDeNivel():
     def __init__(self):
@@ -915,6 +961,10 @@ class Login(Pergunta):
                         data_usuario = (self.usuario, self.senha, xp, moedas)
                         cursor.execute(add_usuario, data_usuario)
                         db.commit()
+                        add_loja = "INSERT INTO Loja VALUES(%s);"
+                        data_loja = (self.usuario,)
+                        cursor.execute(add_loja, data_loja)
+                        db.commit()
                         self.cadastro_pronto = False
                     
                     if self.login_pronto:
@@ -950,8 +1000,80 @@ class Login(Pergunta):
                         query = f"UPDATE usuario SET moedas = '{moedas_nova}' WHERE username = '{self.usuario}';"
                         cursor.execute(query)
                         self.moedas = moedas_nova
-                        coins = self.moedas
                     
+                    global cosmetico1_desbloqueado
+                    if cosmetico1_desbloqueado:
+                        if self.moedas < 200:
+                            cosmetico1_desbloqueado = False
+                        else:
+                            coins_novo = self.moedas - 200
+                            query = f"UPDATE usuario SET moedas = '{coins_novo}' WHERE username = '{self.usuario}';"
+                            cursor.execute(query)
+                            query = "UPDATE loja SET cosmetico1 = %s WHERE username = %s;"
+                            data = (True, self.usuario)
+                            cursor.execute(query, data)
+                            self.moedas = coins_novo
+                            cosmetico1_desbloqueado = False
+                    
+                    global cosmetico2_desbloqueado
+                    if cosmetico2_desbloqueado:
+                        if self.moedas < 200:
+                            cosmetico2_desbloqueado = False
+                        else:
+                            coins_novo = self.moedas - 200
+                            query = f"UPDATE usuario SET moedas = '{coins_novo}' WHERE username = '{self.usuario}';"
+                            cursor.execute(query)
+                            query = "UPDATE loja SET cosmetico2 = %s WHERE username = %s;"
+                            data = (True, self.usuario)
+                            cursor.execute(query, data)
+                            self.moedas = coins_novo
+                            cosmetico2_desbloqueado = False
+                    
+                    global cosmetico3_desbloqueado
+                    if cosmetico3_desbloqueado:
+                        if self.moedas < 200:
+                            cosmetico3_desbloqueado = False
+                        else:
+                            coins_novo = self.moedas - 200
+                            query = f"UPDATE usuario SET moedas = '{coins_novo}' WHERE username = '{self.usuario}';"
+                            cursor.execute(query)
+                            query = "UPDATE loja SET cosmetico3 = %s WHERE username = %s;"
+                            data = (True, self.usuario)
+                            cursor.execute(query, data)
+                            self.moedas = coins_novo
+                            cosmetico3_desbloqueado = False
+                    
+                    global cosmetico1_ok
+                    global cosmetico2_ok
+                    global cosmetico3_ok
+                    username = self.usuario
+                    consulta_cosmetico1 = "SELECT cosmetico1 FROM loja WHERE username = %s;"
+                    cursor.execute(consulta_cosmetico1, (username,))
+                    resultado_cosmetico1 = cursor.fetchone()
+
+                    # Executar a consulta para o cosmetico2
+                    consulta_cosmetico2 = "SELECT cosmetico2 FROM loja WHERE username = %s;"
+                    cursor.execute(consulta_cosmetico2, (username,))
+                    resultado_cosmetico2 = cursor.fetchone()
+
+                    # Executar a consulta para o cosmetico3
+                    consulta_cosmetico3 = "SELECT cosmetico3 FROM loja WHERE username = %s;"
+                    cursor.execute(consulta_cosmetico3, (username,))
+                    resultado_cosmetico3 = cursor.fetchone()
+
+                    # Verificar o resultado do cosmetico1
+                    if resultado_cosmetico1 and resultado_cosmetico1[0] is True:
+                        cosmetico1_ok = True
+
+                    # Verificar o resultado do cosmetico2
+                    if resultado_cosmetico2 and resultado_cosmetico2[0] is True:
+                        cosmetico2_ok = True
+
+                    # Verificar o resultado do cosmetico3
+                    if resultado_cosmetico3 and resultado_cosmetico3[0] is True:
+                        cosmetico3_ok = True
+
+
                     global boost
                     if boost:
                         if self.moedas < 100:
@@ -1169,6 +1291,12 @@ while running:
                 login.banco_de_dados(login.moedas, login.xp)
                 boost_ok = True
             if shield == True and login.moedas >= 100 and shield_ok == False:
+                login.banco_de_dados(login.moedas, login.xp)
+            if cosmetico1_desbloqueado == True and login.moedas >= 200:
+                login.banco_de_dados(login.moedas, login.xp)
+            if cosmetico2_desbloqueado == True and login.moedas >= 200:
+                login.banco_de_dados(login.moedas, login.xp)
+            if cosmetico3_desbloqueado == True and login.moedas >= 200:
                 login.banco_de_dados(login.moedas, login.xp)
         elif nivel.lv_aberto:
             pergunta.nivel(nivel.lv1_aberto, nivel.lv2_aberto, nivel.lv3_aberto, nivel.lv_endless_aberto , nivel.voltar_rect_pergunta, nivel.lv_aberto)

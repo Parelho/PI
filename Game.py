@@ -13,7 +13,7 @@ openai.api_key = os.getenv("api_key")
 
 # Inicializa o pygame
 pygame.init()
-
+pygame.display.set_caption('CodeQuiz')
 # Utilizados como workaround de um bug que estava impedindo a classe Login de pegar os valores atualizados de acertos, level e streak, se conseguir resolver o bug irei remover essa mostruosidade
 acertos = 0
 level = 0
@@ -52,7 +52,10 @@ FONT_NIVEL = pygame.font.SysFont("arial", 100)
 class Jogador:
     def __init__(self):
         self.tema = "oldlace"
-        self.tema_rect = pygame.Rect(450, 300, 100, 50)
+        self.tema_rect = pygame.Rect(675, 100, 200, 100)
+        self.tema_roxo_rect = pygame.Rect(450, 100, 200, 100)
+        self.tema_verde_rect = pygame.Rect(450, 250, 200, 100)
+        self.tema_azul_rect = pygame.Rect(675, 250, 200, 100)
         self.engrenagem_rect = pygame.Rect(20, 500, 100, 100)
         self.loja_rect = pygame.Rect(120, 500, 100, 100)
         self.voltar_rect = pygame.Rect(400, 500, 100, 30)
@@ -89,15 +92,34 @@ class Jogador:
 
     def opcoes(self):
         mpos = pygame.mouse.get_pos()
-        if self.tema_rect.collidepoint(mpos):
+        if self.tema_roxo_rect.collidepoint(mpos):
             if pygame.mouse.get_pressed()[0]:
                 self.tema = "mediumpurple4"
+        elif self.tema_rect.collidepoint(mpos):
+            if pygame.mouse.get_pressed()[0]:
+                self.tema = "oldlace"
+        elif self.tema_verde_rect.collidepoint(mpos):
+            if pygame.mouse.get_pressed()[0]:
+                self.tema = "lightgreen"
+        elif self.tema_azul_rect.collidepoint(mpos):
+            if pygame.mouse.get_pressed()[0]:
+                self.tema = "royalblue3"
 
-        pygame.draw.rect(win, self.tema, self.tema_rect)
-        win.fill(self.tema, self.tema_rect)
 
-        botao = FONT.render("Tema", True, "black")
-        win.blit(botao, (self.tema_rect.x, self.tema_rect.y))
+        pygame.draw.rect(win, self.tema, self.tema_roxo_rect)
+        win.fill(self.tema, self.tema_roxo_rect)
+
+        pygame.draw.rect(win, "black",[445, 95, 210, 110])
+        pygame.draw.rect(win, "mediumpurple4",[450, 100, 200, 100])
+        pygame.draw.rect(win, "black",[670, 95, 210, 110])
+        pygame.draw.rect(win, "oldlace",[675, 100, 200, 100])
+        pygame.draw.rect(win, "black",[445, 245, 210, 110])
+        pygame.draw.rect(win, "lightgreen",[450, 250, 200, 100])
+        pygame.draw.rect(win, "black",[670, 245, 210, 110])
+        pygame.draw.rect(win, "royalblue3",[675, 250, 200, 100])
+
+        temas = FONT_LOGIN.render("Clique para mudar de tema", True, "black")
+        win.blit(temas,(450, 0))
 
         voltar = FONT_LOGIN.render("Voltar", True, "black")
         win.blit(voltar,(400, 500))

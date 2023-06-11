@@ -866,7 +866,7 @@ class Login(Pergunta):
     global coins
     # Método utilizado para permitir a sobrecarga de métodos no Python
     def __init__(self):
-        self.inicio = True
+        self.inicio = False
         self.login = False
         self.cadastro = False
         self.sair_rect = pygame.Rect(830, 0, 64, 64)
@@ -876,10 +876,12 @@ class Login(Pergunta):
         self.senha_rect = pygame.Rect(100, 192, 100, 30)
         self.voltar_rect = pygame.Rect(400, 500, 100, 30)
         self.enviar_rect = pygame.Rect(400, 400, 100 , 30)
+        self.entrar_rect = pygame.Rect(375, 400, 125, 50)
         self.usuario_click = False
         self.senha_click = False
         self.login_pronto = False
         self.cadastro_pronto = False
+        self.entrar = True
         self.senha = ""
         self.usuario = ""
         self.pergunta = Pergunta()
@@ -1080,9 +1082,6 @@ class Login(Pergunta):
             global fechar
             fechar = True
 
-        bem_vindo = FONT.render("CodeQuiz", True, "black")
-        win.blit(bem_vindo, (350, 100))
-
         cadastrar = FONT.render("Cadastrar", True, "black")
         win.blit(cadastrar, (500, 300))
         login = FONT.render("Login", True, "black")
@@ -1105,6 +1104,19 @@ class Login(Pergunta):
             if pygame.mouse.get_pressed()[0]:
                 self.login = True
                 self.inicio = False
+    def tela_boas_vindas(self):
+        bem_vindo = FONT.render("Bem-vindo ao CodeQuiz", True, "black")
+        win.blit(bem_vindo, (200, 100))
+
+        entrar = FONT.render("Entrar", True, "black")
+        win.blit(entrar, (375, 400))
+
+        mpos = pygame.mouse.get_pos()
+        if self.entrar_rect.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
+            time.sleep(0.2)
+            self.inicio = True
+            self.entrar = False
+
 
 # Utilizado para criar a string que será utilizada pelo pygame_textinput
 textinput_usuario = pygame_textinput.TextInputVisualizer()
@@ -1126,6 +1138,8 @@ while running:
     # Coloca o tema do fundo na tela atrás de todo o resto que for desenhado
     win.fill(jogador.tema)
 
+    if login.entrar:
+        login.tela_boas_vindas()
     if logoff == True:
         login.tela_inicio()
     # Login().inicio é utilizado para ver se o a tela de boas vindas deve ser mostrada ou não
@@ -1142,7 +1156,7 @@ while running:
         if login.cadastro_pronto:
             login.banco_de_dados(login.moedas, login.xp)
     
-    elif login.inicio == False and login.login == False and login.cadastro == False:
+    elif login.inicio == False and login.login == False and login.cadastro == False and login.entrar == False:
         if jogador.opcoes_aberto == False and jogador.loja_aberta == False and nivel.lv_aberto == False:
             jogador.menu_principal()
             login.mostrar_xpmoedas()

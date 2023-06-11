@@ -106,17 +106,17 @@ class Jogador:
                 self.tema = "white"
         elif self.tema_azul_rect.collidepoint(mpos):
             if pygame.mouse.get_pressed()[0]:
-                self.tema = "royalblue3"
+                self.tema = "cornflowerblue"
 
         pygame.draw.rect(win, "black",[670, 95, 210, 110])
         pygame.draw.rect(win, "white",[675, 100, 200, 100])
         pygame.draw.rect(win, "black",[670, 245, 210, 110])
-        pygame.draw.rect(win, "royalblue3",[675, 250, 200, 100])
+        pygame.draw.rect(win, "cornflowerblue",[675, 250, 200, 100])
 
         temas = FONT_LOGIN.render("Clique para mudar de tema", True, "black")
         win.blit(temas,(450, 0))
 
-        pygame.draw.rect(win, "orange2",[400, 500, 75, 30], 0, 3)
+        pygame.draw.rect(win, "burlywood2",[400, 500, 75, 30], 0, 3)
         voltar = FONT_LOGIN.render("Voltar", True, "white")
         win.blit(voltar,(400, 500))
         if self.voltar_rect.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
@@ -147,7 +147,7 @@ class Jogador:
         cosmeticos = FONT_LOGIN.render("Cosmeticos = 200 moedas", True, "black")
         win.blit(cosmeticos,(550, 50))
 
-        pygame.draw.rect(win, "orange2",[400, 500, 75, 30], 0, 3)
+        pygame.draw.rect(win, "burlywood2",[400, 500, 75, 30], 0, 3)
         voltar = FONT_LOGIN.render("Voltar", True, "white")
         win.blit(voltar,(400, 500))
         if self.voltar_rect.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
@@ -223,19 +223,20 @@ class SeletorDeNivel():
         pygame.draw.rect(win, "dimgrey",[250, 0, 5 ,600])
         pygame.draw.rect(win, "dimgrey",[650, 0, 5 ,600])
         win.blit(FONT_LOGIN.render("Selecionar nivel", True, "black"), (350, 0))
-        pygame.draw.circle(win, "black",[350, 150], 80)
+        pygame.draw.circle(win, "burlywood2",[350, 150], 80)
         win.blit(FONT_NIVEL.render("1", True, "white"), (325, 90))
-        pygame.draw.circle(win, "black",[550, 325], 80)
-        win.blit(FONT_NIVEL.render("INF", True, "white"), (490, 265))
+        pygame.draw.circle(win, "burlywood2",[550, 325], 80)
+        openai = pygame.image.load(os.path.join("imgs", "OPENAI.png"))
+        win.blit(openai, (480, 255))
         
         if self.lv2_desbloqueado:
-            pygame.draw.circle(win, "black",[550, 150], 80)
+            pygame.draw.circle(win, "burlywood2",[550, 150], 80)
             win.blit(FONT_NIVEL.render("2", True, "white"), (525, 90))
         else:
             pygame.draw.circle(win, "azure4",[550, 150], 80)
             win.blit(cadeado, (525, 125))
         if self.lv3_desbloqueado:
-            pygame.draw.circle(win, "black",[350, 325], 80)
+            pygame.draw.circle(win, "burlywood2",[350, 325], 80)
             win.blit(FONT_NIVEL.render("3", True, "white"), (325, 265))
         else:
             pygame.draw.circle(win, "azure4",[350, 325], 80)
@@ -1098,10 +1099,10 @@ class Login(Pergunta):
         win.blit(usuario, (95, 92))
         senha = FONT_LOGIN.render("Senha: ", True, "black")
         win.blit(senha, (100, 192))
-        pygame.draw.rect(win, "orange2",[400, 500, 75, 30], 0, 3)
+        pygame.draw.rect(win, "burlywood2",[400, 500, 75, 30], 0, 3)
         voltar = FONT_LOGIN.render("Voltar", True, "white")
         win.blit(voltar,(400, 500))
-        pygame.draw.rect(win, "orange2",[400, 400, 80, 30], 0, 3)
+        pygame.draw.rect(win, "burlywood2",[400, 400, 80, 30], 0, 3)
         enviar = FONT_LOGIN.render("Enviar", True, "white")
         win.blit(enviar, (400, 400))
         mpos = pygame.mouse.get_pos()
@@ -1157,10 +1158,10 @@ class Login(Pergunta):
         win.blit(usuario, (95, 92))
         senha = FONT_LOGIN.render("Senha: ", True, "black")
         win.blit(senha, (100, 192))
-        pygame.draw.rect(win, "orange2",[400, 500, 75, 30], 0, 3)
+        pygame.draw.rect(win, "burlywood2",[400, 500, 75, 30], 0, 3)
         voltar = FONT_LOGIN.render("Voltar", True, "white")
         win.blit(voltar,(400, 500))
-        pygame.draw.rect(win, "orange2",[400, 400, 80, 30], 0, 3)
+        pygame.draw.rect(win, "burlywood2",[400, 400, 80, 30], 0, 3)
         enviar = FONT_LOGIN.render("Enviar", True, "white")
         win.blit(enviar, (400, 400))
         mpos = pygame.mouse.get_pos()
@@ -1206,10 +1207,10 @@ class Login(Pergunta):
             global fechar
             fechar = True
 
-        pygame.draw.rect(win, "orange2",[500, 300, 195, 50], 0, 3)
+        pygame.draw.rect(win, "burlywood2",[500, 300, 195, 50], 0, 3)
         cadastrar = FONT.render("Cadastrar", True, "white")
         win.blit(cadastrar, (500, 300))
-        pygame.draw.rect(win, "orange2",[200, 300, 125, 60], 0, 3)
+        pygame.draw.rect(win, "burlywood2",[200, 300, 125, 60], 0, 3)
         login = FONT.render("Login", True, "white")
         win.blit(login, (200, 300))
 
@@ -1234,7 +1235,7 @@ class Login(Pergunta):
         bem_vindo = FONT.render("Bem-vindo ao CodeQuiz", True, "black")
         win.blit(bem_vindo, (200, 100))
 
-        pygame.draw.rect(win, "orange2",[350, 400, 150, 50], 0, 3)
+        pygame.draw.rect(win, "burlywood2",[350, 400, 150, 50], 0, 3)
         entrar = FONT.render("Entrar", True, "white")
         win.blit(entrar, (360, 400))
 

@@ -116,6 +116,7 @@ class Jogador:
         temas = FONT_LOGIN.render("Clique para mudar de tema", True, "black")
         win.blit(temas,(450, 0))
 
+        pygame.draw.rect(win, "black",[398, 498, 79, 34], 0, 3)
         pygame.draw.rect(win, "burlywood2",[400, 500, 75, 30], 0, 3)
         voltar = FONT_LOGIN.render("Voltar", True, "white")
         win.blit(voltar,(400, 500))
@@ -147,6 +148,7 @@ class Jogador:
         cosmeticos = FONT_LOGIN.render("Cosmeticos = 200 moedas", True, "black")
         win.blit(cosmeticos,(550, 50))
 
+        pygame.draw.rect(win, "black",[398, 498, 79, 34], 0, 3)
         pygame.draw.rect(win, "burlywood2",[400, 500, 75, 30], 0, 3)
         voltar = FONT_LOGIN.render("Voltar", True, "white")
         win.blit(voltar,(400, 500))
@@ -1101,9 +1103,11 @@ class Login(Pergunta):
         pygame.draw.rect(win, "black",[90, 192, 600, 40], 2, 3)
         senha = FONT_LOGIN.render("Senha: ", True, "black")
         win.blit(senha, (100, 192))
+        pygame.draw.rect(win, "black",[398, 498, 79, 34], 0, 3)
         pygame.draw.rect(win, "burlywood2",[400, 500, 75, 30], 0, 3)
         voltar = FONT_LOGIN.render("Voltar", True, "white")
         win.blit(voltar,(400, 500))
+        pygame.draw.rect(win, "black",[398, 398, 84, 34], 0, 3)
         pygame.draw.rect(win, "burlywood2",[400, 400, 80, 30], 0, 3)
         enviar = FONT_LOGIN.render("Enviar", True, "white")
         win.blit(enviar, (400, 400))
@@ -1162,9 +1166,11 @@ class Login(Pergunta):
         pygame.draw.rect(win, "black",[90, 192, 600, 40], 2, 3)
         senha = FONT_LOGIN.render("Senha: ", True, "black")
         win.blit(senha, (100, 192))
+        pygame.draw.rect(win, "black",[398, 498, 79, 34], 0, 3)
         pygame.draw.rect(win, "burlywood2",[400, 500, 75, 30], 0, 3)
         voltar = FONT_LOGIN.render("Voltar", True, "white")
         win.blit(voltar,(400, 500))
+        pygame.draw.rect(win, "black",[398, 398, 84, 34], 0, 3)
         pygame.draw.rect(win, "burlywood2",[400, 400, 80, 30], 0, 3)
         enviar = FONT_LOGIN.render("Enviar", True, "white")
         win.blit(enviar, (400, 400))
@@ -1211,9 +1217,13 @@ class Login(Pergunta):
             global fechar
             fechar = True
 
+        bem_vindo = FONT.render("Efetue seu login ou cadastro", True, "black")
+        win.blit(bem_vindo, (165, 100))
+        pygame.draw.rect(win, "black",[498, 298, 199, 54], 0, 3)
         pygame.draw.rect(win, "burlywood2",[500, 300, 195, 50], 0, 3)
         cadastrar = FONT.render("Cadastrar", True, "white")
         win.blit(cadastrar, (500, 300))
+        pygame.draw.rect(win, "black",[198, 298, 129, 64], 0, 3)
         pygame.draw.rect(win, "burlywood2",[200, 300, 125, 60], 0, 3)
         login = FONT.render("Login", True, "white")
         win.blit(login, (200, 300))
@@ -1239,6 +1249,7 @@ class Login(Pergunta):
         bem_vindo = FONT.render("Bem-vindo ao CodeQuiz", True, "black")
         win.blit(bem_vindo, (200, 100))
 
+        pygame.draw.rect(win, "black",[348, 398, 154, 54], 0, 3)
         pygame.draw.rect(win, "burlywood2",[350, 400, 150, 50], 0, 3)
         entrar = FONT.render("Entrar", True, "white")
         win.blit(entrar, (360, 400))

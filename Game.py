@@ -8,11 +8,13 @@ import openai
 import re
 from dotenv import load_dotenv
 
+# Inserir no arquivo .env a chave de api da openai para o nivel infinito funcionar
 load_dotenv()
 openai.api_key = os.getenv("api_key")
 
 # Inicializa o pygame
 pygame.init()
+# Deixa o nome da janela como CodeQuiz
 pygame.display.set_caption('CodeQuiz')
 # Utilizados como workaround de um bug que estava impedindo a classe Login de pegar os valores atualizados de acertos, level e streak, se conseguir resolver o bug irei remover essa mostruosidade
 acertos = 0
@@ -33,6 +35,7 @@ cosmetico2_ok = False
 cosmetico3_ok = False
 mascote = pygame.image.load(os.path.join("imgs", "Mascote.png"))
 
+# Gera o input do chatgpt pra gerar as pergutas e respostas do nivel infinito
 def gerar_texto_chatgpt():
     try:
         global completion
@@ -118,6 +121,7 @@ class Jogador:
 
         pygame.draw.rect(win, "black",[398, 498, 79, 34], 0, 3)
         pygame.draw.rect(win, "burlywood2",[400, 500, 75, 30], 0, 3)
+        # Define o valor true que mantem uma tela nova aberta como false para voltar para a anterior
         voltar = FONT_LOGIN.render("Voltar", True, "white")
         win.blit(voltar,(400, 500))
         if self.voltar_rect.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
@@ -216,11 +220,13 @@ class SeletorDeNivel():
         self.lv3_desbloqueado = False
     
     def selecionar_nivel(self, xp):
+        # Desbloquea os niveis caso o jogador possua xp o suficiente
         if xp >= 1000:
             self.lv2_desbloqueado = True
             if xp >= 2000:
                 self.lv3_desbloqueado = True
-    
+
+        # Cadeado é colocado em cima da bolha de um nível caso ele não esteja desbloqueado
         cadeado = pygame.image.load(os.path.join("imgs", "Lock.png"))
         pygame.draw.rect(win, "dimgrey",[250, 0, 5 ,600])
         pygame.draw.rect(win, "dimgrey",[650, 0, 5 ,600])
@@ -231,6 +237,7 @@ class SeletorDeNivel():
         openai = pygame.image.load(os.path.join("imgs", "OPENAI.png"))
         win.blit(openai, (480, 255))
         
+        # Verifica se o nivel esta desbloqueado para mostrar o cadeado ou o nivel aberto
         if self.lv2_desbloqueado:
             pygame.draw.circle(win, "burlywood2",[550, 150], 80)
             win.blit(FONT_NIVEL.render("2", True, "white"), (525, 90))
@@ -245,6 +252,7 @@ class SeletorDeNivel():
             win.blit(cadeado, (325, 300))
         mpos = pygame.mouse.get_pos()
 
+        # Verifica qual nivel esta sendo aberto
         if self.lv1.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
             self.lv_aberto = True
             self.lv1_aberto = True
@@ -258,6 +266,7 @@ class SeletorDeNivel():
             self.lv_aberto = True
             self.lv_endless_aberto = True
         
+        # Deixa os valores de nivel aberto false caso o nivel seja fechado para parar de mostrar a tela do nivel em cima da tela do menu principal
         if self.lv_aberto == False:
             self.lv1_aberto = False
             self.lv2_aberto = False
@@ -267,7 +276,9 @@ class SeletorDeNivel():
 class Pergunta(SeletorDeNivel, Jogador):
     def __init__(self):
         self.voltar_ok = False
+        # Define as listas com as perguntas
         self.perguntas_lv1 = ["7 // 2 vale quanto?", "print 'Hello, ', 'world', tera qual resultado no console?'", "10 % 2 vale quanto?", "Qual o simbolo utilizado para adicionar comentarios?", "100 / 0 vale quanto?"]
+        # Escolhe uma pergunta aleatória da lista
         self.lv1_index = random.randint(0, len(self.perguntas_lv1) - 1)
         self.perguntas_lv2 = ["print('Hello' + 'world') terá qual resultado?", "idade = 7 + 5 = 4, idade terá qual valor?", "7.5 // 2 vale quanto", "Como posso criar uma função em Python?", "Como posso contar a frequência de elementos em uma lista em Python?"]
         self.lv2_index = random.randint(0, len(self.perguntas_lv2) - 1)
@@ -792,18 +803,20 @@ class Pergunta(SeletorDeNivel, Jogador):
             pygame.draw.rect(win, "azure4",[250, 170, 200, 100])
             pygame.draw.rect(win, "azure4",[10, 300, 200, 100])
             pygame.draw.rect(win, "azure4",[250, 300, 200, 100])
+            # Gera uma nova pergunta
             if self.nova_pergunta.collidepoint(mpos) and pygame.mouse.get_pressed()[0] or self.pergunta_ok == False:
                 self.pergunta_ok = True
                 self.shuffle_ok = False
                 gerar_texto_chatgpt()
 
+            # Tratamento de dados enviado pelo chatgpt
             global completion
             pattern = r"\n|\?|a\)|b\)|c\)|d\)"
             string = completion.choices[0].message.content
             elementos = re.split(pattern, string)
             elementos = [element for element in elementos if element.strip()]
             
-            
+            # Muda de ordem as respotas para a correta não ficar sempre como primeira
             if not self.shuffle_ok:
                 self.resp_certa = elementos[1]
                 self.respostas.clear()
@@ -862,6 +875,7 @@ class Pergunta(SeletorDeNivel, Jogador):
                 win.blit(msg, (720, 110))
                 self.acerto = False
             
+            # Caso os dois ficassem verdadeiros por um bug, eles são definidos como False para arrumar o bug
             if self.erro == True and self.acerto == True:
                 self.erro = False
                 self.acerto = False
@@ -871,10 +885,12 @@ class Pergunta(SeletorDeNivel, Jogador):
                 win.blit(voltar,(400, 500))
                 if voltar_rect_pergunta.collidepoint(mpos) and pygame.mouse.get_pressed()[0]:
                     self.voltar_ok = True
+                    # Abre o metodo do banco de dados para poder atualizar as moedas do jogador
                     login.banco_de_dados(login.moedas, login.xp)
                     acertos = 0
                     streak = 0
                     level = 0
+                    # Escolhe uma nova pergunta aleatória caso o jogador saia do nível para não ficar na mesma
                     self.lv1_index = random.randint(0, len(self.perguntas_lv1) - 1)
                     self.lv2_index = random.randint(0, len(self.perguntas_lv2) - 1)
                     self.lv3_index = random.randint(0, len(self.perguntas_lv3) - 1)
@@ -942,6 +958,7 @@ class Login(Pergunta):
         win.blit(moedas_img, (700, 200))
 
     def banco_de_dados(self, moedas, xp):
+        # Conecta no banco de dados
         try:
             with psycopg.connect(
                 dbname="neondb",
@@ -950,8 +967,10 @@ class Login(Pergunta):
                 host="ep-little-field-610508.us-east-2.aws.neon.tech",
                 port= '5432'
                 ) as db:
+                # Abre o cursor para verificar os valores das tabelas
                 with db.cursor() as cursor:
 
+                    # Insere o cadastro no banco de dados
                     if self.cadastro_pronto == True:
                         add_usuario = "INSERT INTO Usuario VALUES(%s, %s, %s, %s);"
                         data_usuario = (self.usuario, self.senha, xp, moedas)
@@ -963,6 +982,7 @@ class Login(Pergunta):
                         db.commit()
                         self.cadastro_pronto = False
                     
+                    # Verifica se o usuario e senha inseridos existem no banco de dados
                     if self.login_pronto:
                         query = "SELECT * FROM Usuario"
                         cursor.execute(query)
@@ -984,6 +1004,7 @@ class Login(Pergunta):
                                 print("Usuario nao encontrado")
                                 self.login_pronto = False
 
+                    # Caso o usuario sai de algum nível calcula a xp e moedas novas e atualiza no banco de dados
                     if pergunta.voltar_ok:
                         global acertos
                         global level
@@ -997,6 +1018,7 @@ class Login(Pergunta):
                         cursor.execute(query)
                         self.moedas = moedas_nova
                     
+                    # Desbloquea os cosmeticos e remove o custo do banco de dados
                     global cosmetico1_desbloqueado
                     if cosmetico1_desbloqueado:
                         if self.moedas < 200:
@@ -1070,6 +1092,7 @@ class Login(Pergunta):
                         cosmetico3_ok = True
 
 
+                    # Disconta o valor dos powerups do jogador no banco de dados
                     global boost
                     if boost:
                         if self.moedas < 100:
@@ -1311,13 +1334,13 @@ while running:
             if boost == True and login.moedas >= 100 and boost_ok == False:
                 login.banco_de_dados(login.moedas, login.xp)
                 boost_ok = True
-            if shield == True and login.moedas >= 100 and shield_ok == False:
+            elif shield == True and login.moedas >= 100 and shield_ok == False:
                 login.banco_de_dados(login.moedas, login.xp)
-            if cosmetico1_desbloqueado == True and login.moedas >= 200:
+            elif cosmetico1_desbloqueado == True and login.moedas >= 200:
                 login.banco_de_dados(login.moedas, login.xp)
-            if cosmetico2_desbloqueado == True and login.moedas >= 200:
+            elif cosmetico2_desbloqueado == True and login.moedas >= 200:
                 login.banco_de_dados(login.moedas, login.xp)
-            if cosmetico3_desbloqueado == True and login.moedas >= 200:
+            elif cosmetico3_desbloqueado == True and login.moedas >= 200:
                 login.banco_de_dados(login.moedas, login.xp)
         elif nivel.lv_aberto:
             pergunta.nivel(nivel.lv1_aberto, nivel.lv2_aberto, nivel.lv3_aberto, nivel.lv_endless_aberto , nivel.voltar_rect_pergunta, nivel.lv_aberto)
